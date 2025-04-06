@@ -1,0 +1,46 @@
+POST http://localhost:4000/auth/signup
+Content-Type: application/json
+
+{
+    "email": "ad@fdsdhcdfghdxh.com",
+    "password": "1234hhmc56"
+}
+
+###
+POST http://localhost:4000/auth/signin
+Content-Type: application/json
+
+{
+    "email": "ad@fdsdhcdfghdxh.com",
+    "password": "1234hhmc56"
+}
+
+### find a particular user by id
+GET http://localhost:4000/auth/2
+
+### who am i
+GET http://localhost:4000/auth/me
+
+### find user by email
+GET http://localhost:4000/auth?email=asd@fdsdhcdxh.com
+
+###
+DELETE http://localhost:4000/auth/1
+
+### 
+PATCH http://localhost:4000/auth/2
+Content-Type: application/json
+
+{
+    "email": "asd@fdsdhh.pl"
+}
+
+
+###
+POST http://localhost:4000/auth/signout
+
+
+
+
+
+

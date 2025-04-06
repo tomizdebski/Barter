@@ -1,0 +1,23 @@
+###
+GET http://localhost:4000/users/
+
+###
+GET http://localhost:4000/users?email=tom@ff.pl
+
+###
+GET http://localhost:4000/users?email=ad@fdsdhcdfghdxh.com
+
+###
+GET http://localhost:4000/users/1
+
+###
+DELETE http://localhost:4000/users/1
+
+###
+PATCH http://localhost:4000/users/2
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john.doe@example.com"
+}
