@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function Footer() {
   return (
-    <footer className="bg-white px-6 py-6 mt-12">
+    <footer className="bg-white px-6 py-6 ">
       {/* Górna część stopki */}
       <div className="flex items-center justify-between">
         {/* Logo */}

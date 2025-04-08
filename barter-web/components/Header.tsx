@@ -22,7 +22,7 @@ const Header: React.FC = () => {
             alt="Barter Logo"
             width={175}
             height={175}
-            className="cursor-pointer"
+            className="cursor-pointer min-w-[175px]"
           />
         </Link>
       </div>
@@ -33,7 +33,7 @@ const Header: React.FC = () => {
       {/* Buttons */}
       <div className="flex space-x-4">
         <Link href="/auth/login">
-          <button className="px-4 py-2 text-[#00262b] rounded-full hover:bg-blue-50 transition">
+          <button className="px-4 py-2 text-[#00262b] rounded-full hover:bg-blue-50 transition min-w-[90px]">
             Sign In
           </button>
         </Link>

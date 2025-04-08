@@ -2,14 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const [activeTab, setActiveTab] = useState<"login" | "register">("register");
+  const router = useRouter();
 
   return (
     <div className="flex min-h-screen flex-col relative">
-      {/* Logo w rogu */}
+    
       <div className="absolute top-4 left-4 z-50">
         <Link href="/">
           <Image
@@ -21,8 +21,8 @@ export default function LoginPage() {
         </Link>
       </div>
 
-      {/* Pasek kolorów */}
-      <div className="flex h-2 w-full">
+     
+      <div className="flex h-1 w-full">
         <div className="basis-[10%] bg-[#7D0F0F]" />
         <div className="basis-[35%] bg-[#C63224]" />
         <div className="basis-[15%] bg-[#00262b]" />
@@ -47,59 +47,22 @@ export default function LoginPage() {
             {/* Zakładki */}
             <div className="flex justify-start mb-4 text-sm font-medium text-[#00262b]">
               <button
-                className={`px-4 pb-1 border-b-2 transition ${
-                  activeTab === "register"
-                    ? "border-[#00262b] text-[#00262b]"
-                    : "border-transparent text-gray-400"
-                }`}
-                onClick={() => setActiveTab("register")}
+                className={`px-4 pb-1 border-b-2 transition border-[#00262b] text-[#00262b]`}
+                onClick={() => router.push("/auth/register")}
               >
                 Register
               </button>
               <button
-                className={`px-4 pb-1 border-b-2 transition ${
-                  activeTab === "login"
-                    ? "border-[#00262b] text-[#00262b]"
-                    : "border-transparent text-gray-400"
-                }`}
-                onClick={() => setActiveTab("login")}
+                className={`px-4 pb-1 border-b-2 transition border-transparent text-gray-400`}
+                onClick={() => router.push("/auth/login")}
               >
                 Sign in
               </button>
             </div>
 
-            {/* LOGIN */}
-            {activeTab === "login" && (
-              <form className="space-y-4">
-                <input
-                  type="email"
-                  placeholder="Username or email"
-                  className="w-full px-4 py-2 border border-gray-300 focus:outline-none text-gray-700"
-                />
-                <input
-                  type="password"
-                  placeholder="Password"
-                  className="w-full px-4 py-2 border border-gray-300 focus:outline-none text-gray-700"
-                />
-                <div className="flex items-center justify-between">
-                  <button
-                    type="submit"
-                    className="bg-[#d64000] text-white px-5 py-2 hover:bg-orange-700 transition"
-                  >
-                    Sign in
-                  </button>
-                  <a
-                    href="#"
-                    className="text-sm text-[#00262b] hover:underline"
-                  >
-                    Forgot password
-                  </a>
-                </div>
-              </form>
-            )}
+            
 
-            {/* REGISTER */}
-            {activeTab === "register" && (
+           
               <form className="space-y-4">
                 <input
                   type="text"
@@ -160,7 +123,6 @@ export default function LoginPage() {
                   Create an account
                 </button>
               </form>
-            )}
           </div>
         </div>
       </div>

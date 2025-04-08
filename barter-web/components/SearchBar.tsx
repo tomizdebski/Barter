@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function SearchBar() {
   return (
-    <div className="flex-1 max-w-xl mx-6 relative">
+    <div className="flex-1 max-w-xl mx-6 relative min-w-[120px]">
       <input
         type="text"
         placeholder="Search for skills or users..."
