@@ -18,25 +18,36 @@ export class AuthService {
   ) {}
 
   async signup(dto: AuthDto) {
-    const { email, password, avatar } = dto;
-
+    const { email, password, avatar, firstName, lastName } = dto;
+  
     const foundUser = await this.prisma.users.findUnique({ where: { email } });
     if (foundUser) {
-      throw new BadRequestException('User already exists');
+      throw new BadRequestException("User already exists");
     }
-
+  
     const hashedPassword = await this.hashPassword(password);
-
-    await this.prisma.users.create({
+  
+    const newUser = await this.prisma.users.create({
       data: {
         email,
         password: hashedPassword,
         avatar: avatar || null,
+        firstName,         
+        lastName,     
       },
     });
-
-    return { message: 'signup was sucessful', user: { email } };
+  
+    return {
+      message: "signup was successful",
+      user: {
+        id: newUser.id,
+        email: newUser.email,
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+      },
+    };
   }
+  
 
   async signin(dto: AuthDto, req: Request, res: Response) {
     const { email, password } = dto;
