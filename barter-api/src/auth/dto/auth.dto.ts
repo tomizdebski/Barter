@@ -3,6 +3,14 @@ import { IsNotEmpty, IsString, IsEmail, Length } from 'class-validator';
 export class AuthDto {
   @IsNotEmpty()
   @IsString()
+  public firstName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  public lastName: string;
+
+  @IsNotEmpty()
+  @IsString()
   @IsEmail()
   public email: string;
 
@@ -13,3 +21,4 @@ export class AuthDto {
 
   public avatar?: string | null;
 }
+

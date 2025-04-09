@@ -3,13 +3,59 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+
+// ✏️ Zod schema
+const schema = z.object({
+  email: z.string().email("Enter a valid email").min(1, "Email is required"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+type FormValues = z.infer<typeof schema>;
 
 export default function LoginPage() {
-    const router = useRouter();
+  const router = useRouter();
+  const [serverError, setServerError] = useState("");
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>({
+    resolver: zodResolver(schema),
+  });
+
+  const onSubmit = async (data: FormValues) => {
+    setServerError("");
+
+    try {
+      const response = await fetch("http://localhost:4000/auth/signin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        setServerError(err.message || "Login failed");
+        return;
+      }
+
+      router.push("/");
+    } catch (error) {
+      console.error("Login error:", error);
+      setServerError("Something went wrong. Please try again.");
+    }
+  };
 
   return (
     <div className="flex min-h-screen flex-col relative">
-      {/* Logo w rogu */}
+      {/* Logo */}
       <div className="absolute top-4 left-4 z-50">
         <Link href="/">
           <Image
@@ -47,46 +93,64 @@ export default function LoginPage() {
             {/* Zakładki */}
             <div className="flex justify-start mb-4 text-sm font-medium text-[#00262b]">
               <button
-                className={`px-4 pb-1 border-b-2 transition border-transparent text-gray-400`}
+                className="px-4 pb-1 border-b-2 border-transparent text-gray-400"
                 onClick={() => router.push("/auth/register")}
               >
                 Register
               </button>
               <button
-                className={`px-4 pb-1 border-b-2 transition border-[#00262b] text-[#00262b]`}
+                className="px-4 pb-1 border-b-2 border-[#00262b] text-[#00262b]"
                 onClick={() => router.push("/auth/login")}
               >
                 Sign in
               </button>
             </div>
 
-           
-              <form className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              {/* Email */}
+              <div>
                 <input
+                  {...register("email")}
                   type="email"
-                  placeholder="Username or email"
-                  className="w-full px-4 py-2 border border-gray-300 focus:outline-none text-gray-700"
+                  placeholder="Email"
+                  className="w-full px-4 py-2 border border-gray-300 focus:outline-none text-gray-700 rounded"
                 />
+                {errors.email && (
+                  <p className="text-sm text-red-600 mt-1">{errors.email.message}</p>
+                )}
+              </div>
+
+              {/* Password */}
+              <div>
                 <input
+                  {...register("password")}
                   type="password"
                   placeholder="Password"
-                  className="w-full px-4 py-2 border border-gray-300 focus:outline-none text-gray-700"
+                  className="w-full px-4 py-2 border border-gray-300 focus:outline-none text-gray-700 rounded"
                 />
-                <div className="flex items-center justify-between">
-                  <button
-                    type="submit"
-                    className="bg-[#d64000] text-white px-5 py-2 hover:bg-orange-700 transition"
-                  >
-                    Sign in
-                  </button>
-                  <a
-                    href="#"
-                    className="text-sm text-[#00262b] hover:underline"
-                  >
-                    Forgot password
-                  </a>
-                </div>
-              </form>
+                {errors.password && (
+                  <p className="text-sm text-red-600 mt-1">{errors.password.message}</p>
+                )}
+              </div>
+
+              {/* Server error */}
+              {serverError && (
+                <p className="text-sm text-red-600">{serverError}</p>
+              )}
+
+              {/* Submit */}
+              <div className="flex items-center justify-between">
+                <button
+                  type="submit"
+                  className="bg-[#d64000] text-white px-5 py-2 hover:bg-orange-700 transition rounded"
+                >
+                  Sign in
+                </button>
+                <a href="#" className="text-sm text-[#00262b] hover:underline">
+                  Forgot password
+                </a>
+              </div>
+            </form>
           </div>
         </div>
       </div>
