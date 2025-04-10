@@ -3,9 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ChatAi from "@/components/ChatAi";
-import ChatAiWithEyes from "@/components/ChatAiWithEyes";
-import ChatWidget from "@/components/ChatWidget";
+import ChatAi from "@/components/chatAi/ChatAi";
+import ChatAiWithEyes from "@/components/chatAi/ChatAiWithEyes";
+import ChatWidget from "@/components/chatAi/ChatWidget";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
