@@ -40,49 +40,58 @@ export default function RegisterPage() {
   });
 
   const onSubmit = async (data: FormValues) => {
+    const formData = new FormData();
+    formData.append("firstName", data.firstName);
+    formData.append("lastName", data.lastName);
+    formData.append("email", data.email);
+    formData.append("password", data.password);
+
+    const file = data.avatar?.[0];
+
     if (editorRef.current) {
       const canvas = editorRef.current.getImageScaledToCanvas();
       canvas.toBlob(async (blob) => {
-        if (blob) {
-          const formData = new FormData();
-          formData.append("firstName", data.firstName);
-          formData.append("lastName", data.lastName);
-          formData.append("email", data.email);
-          formData.append("password", data.password);
-          formData.append("avatar", blob, "avatar.png");
-
-          try {
-            const res = await fetch("http://localhost:4000/auth/signup", {
-              method: "POST",
-              body: formData,
-            });
-
-            if (res.ok) {
-              setAvatarFile(null);
-              setAvatarPreview(null);
-              setAvatarAccepted(false);
-              router.push("/auth/login");
-            } else {
-              console.error("Signup failed");
-            }
-          } catch (err) {
-            console.error("Error:", err);
-          }
-        }
+        if (!blob) return;
+        formData.append("avatar", blob, "avatar.png");
+        await submitForm(formData);
       }, "image/png");
+    } else if (file) {
+      formData.append("avatar", file);
+      await submitForm(formData);
+    } else {
+      console.error("Brak avatara – nie można wysłać formularza.");
+    }
+  };
+
+  const submitForm = async (formData: FormData) => {
+    try {
+      const res = await fetch("http://localhost:4000/auth/signup", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (res.ok) {
+        setAvatarFile(null);
+        setAvatarPreview(null);
+        setAvatarAccepted(false);
+        router.push("/auth/login");
+      } else {
+        const text = await res.text();
+        console.error("Signup failed:", text);
+      }
+    } catch (err) {
+      console.error("Error:", err);
     }
   };
 
   return (
     <div className="flex min-h-screen flex-col relative">
-      {/* Logo */}
       <div className="absolute top-4 left-4 z-50">
         <Link href="/">
           <Image src="/icons/logo_l.svg" alt="Barter logo" width={40} height={40} />
         </Link>
       </div>
 
-      {/* Color bar */}
       <div className="flex h-1 w-full">
         <div className="basis-[10%] bg-[#7D0F0F]" />
         <div className="basis-[35%] bg-[#C63224]" />
@@ -90,26 +99,22 @@ export default function RegisterPage() {
         <div className="basis-[40%] bg-[#00C3F5]" />
       </div>
 
-      {/* Layout */}
       <div className="flex flex-col md:flex-row flex-1">
-        {/* Left side */}
         <div className="w-full md:w-1/2 bg-[#00262b] text-white flex items-center justify-center px-10 py-12">
           <div className="text-center md:text-left">
-            <h1 className="text-3xl md:text-[56px] font-black leading-tight">
+            <h1 className="text-3xl md:text-8xl italic font-black leading-tight">
               Start bartering <br />
               <span className="text-cyan-400">with us</span>
             </h1>
           </div>
         </div>
 
-        {/* Right side */}
         <div className="w-full md:w-1/2 flex items-start justify-center px-6 py-12">
           <form
             onSubmit={handleSubmit(onSubmit)}
             className="w-full max-w-sm space-y-4"
             encType="multipart/form-data"
           >
-            {/* Tabs */}
             <div className="flex justify-start mb-4 text-sm font-medium text-[#00262b]">
               <button
                 type="button"
@@ -126,7 +131,6 @@ export default function RegisterPage() {
               </button>
             </div>
 
-            {/* First name */}
             <div>
               <input
                 {...register("firstName")}
@@ -139,7 +143,6 @@ export default function RegisterPage() {
               )}
             </div>
 
-            {/* Last name */}
             <div>
               <input
                 {...register("lastName")}
@@ -152,7 +155,6 @@ export default function RegisterPage() {
               )}
             </div>
 
-            {/* Email */}
             <div>
               <input
                 {...register("email")}
@@ -165,7 +167,6 @@ export default function RegisterPage() {
               )}
             </div>
 
-            {/* Password */}
             <div className="relative">
               <input
                 {...register("password")}
@@ -186,11 +187,10 @@ export default function RegisterPage() {
               )}
             </div>
 
-            {/* Avatar */}
-            <div>
+            <div className="">
               <label className="block text-sm text-[#00262b] mb-1 pl-1">Avatar</label>
 
-              <div className="flex items-center gap-4 mb-2">
+              <div className="flex items-center justify-between mb-2">
                 <label
                   htmlFor="avatar"
                   className="bg-[#00262b] text-white text-sm px-4 py-2 h-10 flex items-center justify-center cursor-pointer hover:bg-[#001a1f] transition rounded w-32 text-center"
@@ -259,7 +259,7 @@ export default function RegisterPage() {
                     }}
                     className="mt-2 bg-green-600 text-white text-sm px-4 py-1 rounded hover:bg-green-700 transition"
                   >
-                    Zatwierdź avatar
+                    Accept avatar
                   </button>
                 </div>
               )}
@@ -271,7 +271,6 @@ export default function RegisterPage() {
               )}
             </div>
 
-            {/* Submit */}
             <button
               type="submit"
               className="bg-[#d64000] text-white px-5 py-2 hover:bg-orange-700 transition rounded-full w-full"
@@ -284,4 +283,3 @@ export default function RegisterPage() {
     </div>
   );
 }
-
