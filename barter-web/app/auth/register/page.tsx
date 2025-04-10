@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-
+import { useRef, useState } from "react";
+import AvatarEditor from "react-avatar-editor";
 
 const schema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -17,10 +17,7 @@ const schema = z.object({
   avatar: z
     .any()
     .refine((files) => files && files.length > 0, "Avatar is required")
-    .refine(
-      (files) => files?.[0]?.size < 2_000_000,
-      "Max file size is 2MB"
-    ),
+    .refine((files) => files?.[0]?.size < 2_000_000, "Max file size is 2MB"),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -28,6 +25,11 @@ type FormValues = z.infer<typeof schema>;
 export default function RegisterPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarAccepted, setAvatarAccepted] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [scale, setScale] = useState(1);
+  const editorRef = useRef<AvatarEditor | null>(null);
 
   const {
     register,
@@ -38,26 +40,36 @@ export default function RegisterPage() {
   });
 
   const onSubmit = async (data: FormValues) => {
-    const formData = new FormData();
-    formData.append("firstName", data.firstName);
-    formData.append("lastName", data.lastName);
-    formData.append("email", data.email);
-    formData.append("password", data.password);
-    formData.append("avatar", data.avatar[0]);
+    if (editorRef.current) {
+      const canvas = editorRef.current.getImageScaledToCanvas();
+      canvas.toBlob(async (blob) => {
+        if (blob) {
+          const formData = new FormData();
+          formData.append("firstName", data.firstName);
+          formData.append("lastName", data.lastName);
+          formData.append("email", data.email);
+          formData.append("password", data.password);
+          formData.append("avatar", blob, "avatar.png");
 
-    try {
-      const res = await fetch("http://localhost:4000/auth/signup", {
-        method: "POST",
-        body: formData,
-      });
+          try {
+            const res = await fetch("http://localhost:4000/auth/signup", {
+              method: "POST",
+              body: formData,
+            });
 
-      if (res.ok) {
-        router.push("/auth/login");
-      } else {
-        console.error("Signup failed");
-      }
-    } catch (err) {
-      console.error("Error:", err);
+            if (res.ok) {
+              setAvatarFile(null);
+              setAvatarPreview(null);
+              setAvatarAccepted(false);
+              router.push("/auth/login");
+            } else {
+              console.error("Signup failed");
+            }
+          } catch (err) {
+            console.error("Error:", err);
+          }
+        }
+      }, "image/png");
     }
   };
 
@@ -155,61 +167,103 @@ export default function RegisterPage() {
 
             {/* Password */}
             <div className="relative">
-  <input
-    {...register("password")}
-    type={showPassword ? "text" : "password"}
-    placeholder="Password"
-    className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded pr-10"
-  />
-  <button
-    type="button"
-    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
-    onClick={() => setShowPassword((prev) => !prev)}
-    aria-label={showPassword ? "Hide password" : "Show password"}
-  >
-    {showPassword ? (
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10a9.96 9.96 0 012.075-6.125M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
-    ) : (
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-      </svg>
-    )}
-  </button>
-  {errors.password && (
-    <p className="text-sm text-red-600 mt-1">{errors.password.message}</p>
-  )}
-</div>
-
+              <input
+                {...register("password")}
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded pr-10"
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                👁️
+              </button>
+              {errors.password && (
+                <p className="text-sm text-red-600 mt-1">{errors.password.message}</p>
+              )}
+            </div>
 
             {/* Avatar */}
             <div>
               <label className="block text-sm text-[#00262b] mb-1 pl-1">Avatar</label>
-              <div className="flex items-center gap-4">
+
+              <div className="flex items-center gap-4 mb-2">
                 <label
                   htmlFor="avatar"
-                  className="bg-[#00262b] text-white text-sm px-4 py-2 cursor-pointer hover:bg-[#001a1f] transition rounded"
+                  className="bg-[#00262b] text-white text-sm px-4 py-2 h-10 flex items-center justify-center cursor-pointer hover:bg-[#001a1f] transition rounded w-32 text-center"
                 >
                   Choose file
                 </label>
-                <span id="file-name" className="text-sm text-gray-600 truncate" />
+
+                {avatarAccepted && avatarPreview && (
+                  <Image
+                    src={avatarPreview}
+                    alt="Avatar"
+                    width={40}
+                    height={40}
+                    className="rounded-full object-cover"
+                  />
+                )}
               </div>
+
               <input
                 {...register("avatar")}
                 type="file"
                 id="avatar"
+                accept="image/*"
                 className="hidden"
                 onChange={(e) => {
-                  const fileName = e.target.files?.[0]?.name;
-                  const label = document.getElementById("file-name");
-                  if (label && fileName) label.textContent = fileName;
-
-                  // zaktualizuj RHF (ważne!)
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    setAvatarFile(file);
+                    setAvatarAccepted(false);
+                    setAvatarPreview(null);
+                  }
                   register("avatar").onChange(e);
                 }}
               />
+
+              {avatarFile && !avatarAccepted && (
+                <div className="flex flex-col gap-2 items-center">
+                  <AvatarEditor
+                    ref={editorRef}
+                    image={avatarFile}
+                    width={100}
+                    height={100}
+                    border={20}
+                    borderRadius={50}
+                    color={[255, 255, 255, 0.6]}
+                    scale={scale}
+                  />
+                  <input
+                    type="range"
+                    min="1"
+                    max="2"
+                    step="0.01"
+                    value={scale}
+                    onChange={(e) => setScale(parseFloat(e.target.value))}
+                    className="w-full"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (editorRef.current) {
+                        const canvas = editorRef.current.getImageScaledToCanvas();
+                        const url = canvas.toDataURL();
+                        setAvatarPreview(url);
+                        setAvatarAccepted(true);
+                      }
+                    }}
+                    className="mt-2 bg-green-600 text-white text-sm px-4 py-1 rounded hover:bg-green-700 transition"
+                  >
+                    Zatwierdź avatar
+                  </button>
+                </div>
+              )}
+
               {errors.avatar && (
                 <p className="text-sm text-red-600 mt-1">
                   {errors.avatar.message as string}
@@ -230,3 +284,4 @@ export default function RegisterPage() {
     </div>
   );
 }
+

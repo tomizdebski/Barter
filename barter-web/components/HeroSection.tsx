@@ -5,7 +5,7 @@ export default function HeroSection() {
     <section className="relative w-full h-[600px] bg-[#00262b] overflow-hidden flex">
       {/* Lewa część - tekst */}
       <div className="w-full md:w-1/2 px-6 md:px-12 flex flex-col justify-center z-10 text-white">
-        <h1 className="text-5xl font-extrabold leading-tight">
+        <h1 className="text-8xl font-black leading-tight italic">
           Bring your <span className="text-pink-400 italic">goals into focus</span>
         </h1>
         <p className="mt-6 text-lg text-gray-200 font-medium">

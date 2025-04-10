@@ -12,7 +12,7 @@ export default function RegisterBanner() {
 
       {/* Treść */}
       <div className="relative z-10 max-w-4xl mx-auto px-4">
-        <h1 className="text-white text-4xl sm:text-5xl font-extrabold mb-4">
+        <h1 className="text-white text-4xl sm:text-6xl font-black mb-4 italic">
           Register for a free account
         </h1>
         <p className="text-white text-lg sm:text-xl mb-8">Sign up now.</p>
