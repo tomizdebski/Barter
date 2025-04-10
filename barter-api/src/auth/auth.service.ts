@@ -66,16 +66,26 @@ export class AuthService {
       throw new BadRequestException('Invalid password');
     }
 
+    // ➕ dodaj wszystkie dane do tokena
     const token = await this.signToken({
       id: foundUser.id.toString(),
       email: foundUser.email,
+      firstName: foundUser.firstName ?? undefined,
+      lastName: foundUser.lastName ?? undefined,
+      avatar: foundUser.avatar,
     });
 
     if (!token) {
       throw new ForbiddenException();
     }
 
-    res.cookie('token', token);
+    // 🍪 zapisz JWT w cookie
+    res.cookie('token', token, {
+      httpOnly: false,
+      secure: false, // ustaw na true jeśli używasz HTTPS
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 dni
+    });
 
     return res.send({ message: 'Logged in succesfully' });
   }
@@ -101,8 +111,25 @@ export class AuthService {
     return bcrypt.compare(password, hashedPassword);
   }
 
-  async signToken(args: { id: string; email: string }) {
-    const payload = args;
-    return this.jwt.signAsync(payload, { secret: jwtSecret });
+  // 🔁 teraz przyjmujemy więcej danych
+  async signToken(user: {
+    id: string;
+    email: string;
+    firstName?: string;
+    lastName?: string;
+    avatar?: string | null;
+  }) {
+    const payload = {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      avatarUrl: user.avatar || null,
+    };
+
+    return this.jwt.signAsync(payload, {
+      secret: jwtSecret,
+      expiresIn: '7d',
+    });
   }
 }

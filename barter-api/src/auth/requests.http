@@ -2,8 +2,8 @@ POST http://localhost:4000/auth/signup
 Content-Type: application/json
 
 {
-    "email": "ad@fdsdhcdfghdxh.com",
-    "password": "1234hhmc56"
+    "email": "afd@fdsdhcdfghdxh.com",
+    "password": "1234fhhmc56"
 }
 
 ###
