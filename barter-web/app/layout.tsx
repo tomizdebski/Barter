@@ -1,20 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google"; // <- Inter z next/font
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ChatAi from "@/components/ChatAi";
-import ChatAiWithEyes from "@/components/ChatAiWithEyes";
-import ChatWidget from "@/components/ChatWidget";
+import ChatWidget from "@/components/chatAi/ChatWidget";
+import { UserProvider } from "@/contexts/UserContext";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Import czcionki Inter
+const inter = Inter({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["400", "700", "900"],
+  style: ["normal", "italic"],
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
@@ -29,16 +26,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${inter.variable} font-sans antialiased`}>
+      <UserProvider>
         <Header />
         {children}
-       
-        
         <ChatWidget />
         <Footer />
+      </UserProvider>
       </body>
     </html>
   );
 }
+
+

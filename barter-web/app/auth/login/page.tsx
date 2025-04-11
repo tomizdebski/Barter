@@ -7,6 +7,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
+import { jwtDecode } from "jwt-decode";
+import { useUser } from "@/contexts/UserContext"; 
+import type { User } from "@/contexts/UserContext"; 
 
 // ✏️ Zod schema
 const schema = z.object({
@@ -19,11 +22,12 @@ type FormValues = z.infer<typeof schema>;
 export default function LoginPage() {
   const router = useRouter();
   const [serverError, setServerError] = useState("");
+  const { setUser } = useUser(); // 🧠 ustawiamy usera do kontekstu
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
   });
@@ -38,12 +42,24 @@ export default function LoginPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
+        credentials: "include",
       });
 
       if (!response.ok) {
         const err = await response.json();
         setServerError(err.message || "Login failed");
         return;
+      }
+
+      // ✅ Po udanym logowaniu — dekoduj token i ustaw usera
+      const token = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("token="))
+        ?.split("=")[1];
+
+      if (token) {
+        const decodedUser = jwtDecode<User>(token);
+        setUser(decodedUser);
       }
 
       router.push("/");
@@ -80,7 +96,7 @@ export default function LoginPage() {
         {/* Lewa część */}
         <div className="w-full md:w-1/2 bg-[#00262b] text-white flex items-center justify-center px-10 py-12">
           <div className="text-center md:text-left">
-            <h1 className="text-3xl md:text-[56px] font-black leading-tight">
+            <h1 className="text-3xl md:text-8xl italic font-black leading-tight">
               Start bartering <br />
               <span className="text-cyan-400">with us</span>
             </h1>
@@ -116,7 +132,9 @@ export default function LoginPage() {
                   className="w-full px-4 py-2 border border-gray-300 focus:outline-none text-gray-700 rounded"
                 />
                 {errors.email && (
-                  <p className="text-sm text-red-600 mt-1">{errors.email.message}</p>
+                  <p className="text-sm text-red-600 mt-1">
+                    {errors.email.message}
+                  </p>
                 )}
               </div>
 
@@ -129,7 +147,9 @@ export default function LoginPage() {
                   className="w-full px-4 py-2 border border-gray-300 focus:outline-none text-gray-700 rounded"
                 />
                 {errors.password && (
-                  <p className="text-sm text-red-600 mt-1">{errors.password.message}</p>
+                  <p className="text-sm text-red-600 mt-1">
+                    {errors.password.message}
+                  </p>
                 )}
               </div>
 
@@ -142,9 +162,10 @@ export default function LoginPage() {
               <div className="flex items-center justify-between">
                 <button
                   type="submit"
-                  className="bg-[#d64000] text-white px-5 py-2 hover:bg-orange-700 transition rounded"
+                  disabled={isSubmitting}
+                  className="bg-[#d64000] text-white px-5 py-2 hover:bg-orange-700 transition rounded disabled:opacity-50"
                 >
-                  Sign in
+                  {isSubmitting ? "Signing in..." : "Sign in"}
                 </button>
                 <a href="#" className="text-sm text-[#00262b] hover:underline">
                   Forgot password
@@ -157,3 +178,4 @@ export default function LoginPage() {
     </div>
   );
 }
+
