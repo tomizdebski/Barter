@@ -6,6 +6,7 @@ import Link from "next/link";
 import SearchBar from "./SearchBar";
 import { usePathname } from "next/navigation";
 import { useUser } from "@/contexts/UserContext";
+import UserDropdown from "./UserDropdown";
 
 const Header: React.FC = () => {
   const pathname = usePathname();
@@ -37,19 +38,8 @@ const Header: React.FC = () => {
       <div className="flex items-center space-x-4">
         {user ? (
           <>
-            <button
-              onClick={logout}
-              className="px-4 py-2 text-[#00262b] rounded-full hover:bg-red-50 transition min-w-[90px]"
-            >
-              Logout
-            </button>
-            <Image
-              src={`http://localhost:4000/${user.avatarUrl}`}
-              alt={user.email}
-              width={56}
-              height={56}
-              className="rounded-full object-cover"
-            />
+            
+            <UserDropdown />
           </>
         ) : (
           <>
