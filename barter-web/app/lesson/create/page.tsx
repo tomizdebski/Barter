@@ -12,8 +12,12 @@ const schema = z.object({
   name: z.string().min(3, "Lesson title is required"),
   content: z.string().min(10, "Description must be at least 10 characters"),
   categoryId: z.string().min(1, "Category is required"),
-  photo: z.any().optional(),
-  video: z.any().optional(),
+  photo: z
+    .any()
+    .refine((files) => !files || files.length === 0 || files[0]?.size < 5_000_000, "Max photo size is 5MB"),
+  video: z
+    .any()
+    .refine((files) => !files || files.length === 0 || files[0]?.size < 20_000_000, "Max video size is 20MB"),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -21,6 +25,8 @@ type FormValues = z.infer<typeof schema>;
 export default function AddLessonPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
+  const [previewVideo, setPreviewVideo] = useState<string | null>(null);
 
   const {
     register,
@@ -57,13 +63,6 @@ export default function AddLessonPage() {
 
   return (
     <div className="flex min-h-screen flex-col relative">
-      {/* Logo */}
-      <div className="absolute top-4 left-4 z-50">
-        <Link href="/">
-          <Image src="/icons/logo_l.svg" alt="Barter logo" width={40} height={40} />
-        </Link>
-      </div>
-
       {/* Color bar */}
       <div className="flex h-1 w-full">
         <div className="basis-[10%] bg-[#7D0F0F]" />
@@ -98,13 +97,6 @@ export default function AddLessonPage() {
                 className="px-4 pb-1 border-b-2 border-[#00262b] text-[#00262b]"
               >
                 Add Lesson
-              </button>
-              <button
-                type="button"
-                className="px-4 pb-1 border-b-2 border-transparent text-gray-400"
-                onClick={() => router.push("/dashboard")}
-              >
-                Dashboard
               </button>
             </div>
 
@@ -141,20 +133,70 @@ export default function AddLessonPage() {
               {errors.categoryId && <p className="text-sm text-red-600">{errors.categoryId.message}</p>}
             </div>
 
+            {/* Photo */}
             <div>
-              <label className="block text-sm text-[#00262b] mb-1">Photo (optional)</label>
-              <input type="file" {...register("photo")} accept="image/*" />
+             
+              <div className="flex items-center justify-between mb-2">
+                <label
+                  htmlFor="photo"
+                  className="bg-[#00262b] text-white text-sm px-4 py-2 h-10 flex items-center justify-center cursor-pointer hover:bg-[#001a1f] transition rounded w-32 text-center"
+                >
+                  Choose image
+                </label>
+                {previewPhoto && (
+                  <Image
+                    src={previewPhoto}
+                    alt="Preview"
+                    width={40}
+                    height={40}
+                    className="rounded object-cover"
+                  />
+                )}
+              </div>
+              <input
+                id="photo"
+                type="file"
+                accept="image/*"
+                {...register("photo")}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) setPreviewPhoto(URL.createObjectURL(file));
+                }}
+                className="hidden"
+              />
             </div>
 
+            {/* Video */}
             <div>
-              <label className="block text-sm text-[#00262b] mb-1">Video (optional)</label>
-              <input type="file" {...register("video")} accept="video/*" />
+              
+              <div className="flex items-center justify-between mb-2">
+                <label
+                  htmlFor="video"
+                  className="bg-[#00262b] text-white text-sm px-4 py-2 h-10 flex items-center justify-center cursor-pointer hover:bg-[#001a1f] transition rounded w-32 text-center"
+                >
+                  Choose video
+                </label>
+              </div>
+              <input
+                id="video"
+                type="file"
+                accept="video/*"
+                {...register("video")}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) setPreviewVideo(URL.createObjectURL(file));
+                }}
+                className="hidden"
+              />
+              {previewVideo && (
+                <video src={previewVideo} controls className="mt-2 rounded w-full h-auto max-h-48" />
+              )}
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="bg-[#d64000] text-white px-5 py-2 hover:bg-orange-700 transition rounded-full w-full"
+              className="bg-green-600 text-white px-5 py-2 hover:bg-green-700 transition rounded-full w-full"
             >
               {loading ? "Submitting..." : "Add Lesson"}
             </button>

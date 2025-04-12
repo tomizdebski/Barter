@@ -6,6 +6,8 @@ import { UsersModule } from './users/users.module';
 import { PrismaModule } from 'prisma/prisma.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { QuizModule } from './quiz/quiz.module';
+import { LessonsModule } from './lessons/lessons.module';
+import { CategoriesModule } from './categories/categories.module';
 import * as path from 'path';
 
 @Module({
@@ -18,6 +20,8 @@ import * as path from 'path';
     UsersModule,
     PrismaModule,
     QuizModule,
+    LessonsModule,
+    CategoriesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
