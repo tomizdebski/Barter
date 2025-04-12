@@ -9,9 +9,9 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: secret
     ports:
-      - "5434:5432" # Przekierowanie niestandardowego portu na hosta (5433)
+      - "5434:5432" 
     volumes:
-      - postgres_data:/var/lib/postgresql/data # Persistent storage
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
   postgres_data:

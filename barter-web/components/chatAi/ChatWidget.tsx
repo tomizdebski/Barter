@@ -8,42 +8,51 @@ export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">
       {/* Ikona czatu */}
       {!isOpen && (
         <button
-        onClick={() => setIsOpen(true)}
-        className="w-16 h-16   flex items-center justify-center hover:scale-105 transition"
-        aria-label="Open chat"
-      >
-        <ChatAiWithEyes />
-      </button>
-      
+          onClick={() => setIsOpen(true)}
+          className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center hover:scale-105 transition"
+          aria-label="Open chat"
+        >
+          <ChatAiWithEyes />
+        </button>
       )}
 
       {/* Panel czatu */}
       {isOpen && (
-        <div className="w-[320px] h-[500px] bg-white rounded-xl shadow-xl flex flex-col overflow-hidden">
-          {/* Główny pasek (top) */}
+        <div className="w-[95vw] max-w-[360px] h-[85vh] max-h-[600px] bg-white rounded-xl shadow-xl flex flex-col overflow-hidden">
+          {/* Pasek górny */}
           <div className="bg-[#00262b] text-white p-3 flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <ChatAiWithEyes />
-              <Image src="/icons/logo_l.svg" alt="Barter Logo" width={80} height={80} />
+              <Image
+                src="/icons/logo_l.svg"
+                alt="Barter Logo"
+                width={60}
+                height={60}
+              />
             </div>
-            <button onClick={() => setIsOpen(false)} className="text-white text-lg">
+            <button
+              onClick={() => setIsOpen(false)}
+              className="text-white text-2xl leading-none"
+            >
               ×
             </button>
           </div>
 
-          {/* Treść / wiadomość powitalna */}
+          {/* Treść */}
           <div className="p-4 flex-1 overflow-y-auto text-sm text-gray-700 border-b">
             <p>
-              Before we get started; just a reminder that this chat is AI generated,
-              mistakes are possible. By using it you agree that Barter may create a record of this chat.
-              Your personal data will be used as described in our{" "}
+              Before we get started; just a reminder that this chat is AI
+              generated, mistakes are possible. By using it you agree that
+              Barter may create a record of this chat. Your personal data will
+              be used as described in our{" "}
               <a href="#" className="underline">
                 privacy policy
-              </a>.
+              </a>
+              .
             </p>
           </div>
 
@@ -52,7 +61,7 @@ export default function ChatWidget() {
             <input
               type="text"
               placeholder="Write a message"
-              className="flex-1 border border-[#00262b] text-[#00262b] rounded px-4 py-2 text-sm focus:outline-none"
+              className="flex-1 border border-[#00262b] text-[#00262b] rounded px-3 py-2 text-sm focus:outline-none"
             />
             <button type="submit" className="ml-2 text-[#00262b]">
               <svg
