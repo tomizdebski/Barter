@@ -5,6 +5,19 @@ import { PrismaService } from 'prisma/prisma.service';
 export class LessonsService {
   constructor(private prisma: PrismaService) {}
 
+  
+  async findAll() {
+    return this.prisma.lessons.findMany({
+      include: {
+        category: true,
+        instructor: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
   async create(
     dto: any,
     photo?: Express.Multer.File,
