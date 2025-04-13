@@ -1,0 +1,3 @@
+
+// Search for lessons
+GET http://localhost:4000/lessons/search?q=CSS
