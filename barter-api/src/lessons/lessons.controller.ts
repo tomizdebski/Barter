@@ -5,6 +5,7 @@ import {
   UseInterceptors,
   Body,
   Get,
+  Query,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -19,6 +20,11 @@ export class LessonsController {
   @Get()
   async findAll() {
     return this.lessonsService.findAll();
+  }
+
+  @Get('search')
+  async searchLessons(@Query('q') query: string) {
+    return this.lessonsService.search(query);
   }
 
   @Post()

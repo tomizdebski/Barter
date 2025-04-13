@@ -9,10 +9,13 @@ import { useUser } from "@/contexts/UserContext";
 import UserDropdown from "../UserDropdown";
 import { Plus, ShoppingCart } from "lucide-react";
 import QuizIcon from "../quiz/QuizIcon";
+import { useRouter } from "next/navigation";
+
 
 const Header: React.FC = () => {
   const pathname = usePathname();
   const hideOnAuthPages = pathname.startsWith("/auth");
+  const router = useRouter();
 
   const { user } = useUser();
 
@@ -43,7 +46,11 @@ const Header: React.FC = () => {
       </div>
 
       {/* Search bar */}
-      <SearchBar />
+      <SearchBar
+        onSearch={(query: string) => {
+          router.push(`/search?q=${encodeURIComponent(query)}`);
+        }}
+      />
 
       {/* Buttons + User section */}
       <div className="flex items-center space-x-4">

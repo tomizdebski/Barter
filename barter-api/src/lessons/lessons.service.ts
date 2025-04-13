@@ -18,6 +18,28 @@ export class LessonsService {
     });
   }
 
+  async search(query: string) {
+    return this.prisma.lessons.findMany({
+      where: {
+        OR: [
+          { name: { contains: query, mode: 'insensitive' } },
+          { content: { contains: query, mode: 'insensitive' } },
+          { category: { name: { contains: query, mode: 'insensitive' } } }, // <-- tu!
+        ],
+      },
+      include: {
+        category: true,
+        instructor: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+    });
+  }
+  
+
   async create(
     dto: any,
     photo?: Express.Multer.File,
