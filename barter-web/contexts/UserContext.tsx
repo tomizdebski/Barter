@@ -43,7 +43,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     document.cookie = "token=; Max-Age=0; path=/";
     setUser(null);
-    window.location.href = "/auth/login";
+    window.location.href = "/";
   };
 
   return (

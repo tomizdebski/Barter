@@ -4,9 +4,6 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import Link from "next/link";
-
-const QUESTION_TIME = 5; // seconds per question
 
 type Question = {
   Question: string;
@@ -32,19 +29,12 @@ export default function QuizPage() {
 
   useEffect(() => {
     async function fetchQuestions() {
-      const res = await fetch(
-        `http://localhost:4000/quiz?count=20&topic=${topic}`
-      );
+      const res = await fetch(`http://localhost:4000/quiz?count=20&topic=${topic}`);
       const data = await res.json();
 
       const questionsWithShuffledAnswers = data.pytania.map((q: Question) => ({
         ...q,
-        shuffledAnswers: [
-          q.Answer,
-          q.Distractor1,
-          q.Distractor2,
-          q.Distractor3,
-        ].sort(() => Math.random() - 0.5),
+        shuffledAnswers: [q.Answer, q.Distractor1, q.Distractor2, q.Distractor3].sort(() => Math.random() - 0.5),
       }));
 
       setQuestions(questionsWithShuffledAnswers);
@@ -70,9 +60,7 @@ export default function QuizPage() {
     setSelectedAnswer(answer);
 
     const isCorrect = answer === currentQuestion.Answer;
-    const audio = new Audio(
-      isCorrect ? "/sounds/correct.mp3" : "/sounds/incorrect.mp3"
-    );
+    const audio = new Audio(isCorrect ? "/sounds/correct.mp3" : "/sounds/incorrect.mp3");
     audio.play();
 
     if (isCorrect) setScore((s) => s + 1);
@@ -82,11 +70,7 @@ export default function QuizPage() {
         setCurrentIndex((i) => i + 1);
         setSelectedAnswer(null);
       } else {
-        router.push(
-          `/quiz/result?score=${score + (isCorrect ? 1 : 0)}&total=${
-            questions.length
-          }`
-        );
+        router.push(`/quiz/result?score=${score + (isCorrect ? 1 : 0)}&total=${questions.length}`);
       }
     }, 1500);
   };
@@ -102,20 +86,12 @@ export default function QuizPage() {
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-[#00262b] to-[#00404d] text-white p-4 flex flex-col">
       {/* Logo */}
-     
-
-<div className="absolute top-4 left-4 z-50">
-  <Link href="/">
-    <Image
-      src="/icons/logo_l.svg"
-      alt="Barter logo"
-      width={40}
-      height={40}
-      className="cursor-pointer"
-    />
-  </Link>
-</div>
-
+      <div
+        className="absolute top-4 left-4 z-50 cursor-pointer"
+        onClick={() => router.push("/")}
+      >
+        <Image src="/icons/logo_l.svg" alt="Barter logo" width={40} height={40} />
+      </div>
 
       {/* Timer */}
       <div className="absolute top-4 right-4 text-sm text-orange-300">
@@ -130,12 +106,12 @@ export default function QuizPage() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -30 }}
             transition={{ duration: 0.4 }}
-            className="text-center space-y-6 max-w-2xl"
+            className="text-center space-y-6 max-w-2xl w-full"
           >
             <h2 className="text-lg text-cyan-400 mb-2">
               Question {currentIndex + 1} of {questions.length}
             </h2>
-            <h1 className="text-2xl md:text-3xl font-bold">
+            <h1 className="text-2xl md:text-3xl font-bold break-words">
               {currentQuestion.Question}
             </h1>
 
@@ -145,7 +121,7 @@ export default function QuizPage() {
                   key={i}
                   onClick={() => handleAnswer(ans)}
                   disabled={!!selectedAnswer}
-                  className={`w-full max-w-[500px] mx-auto py-3 px-4 rounded-lg text-left whitespace-normal transition text-sm font-medium ${
+                  className={`w-full min-w-[320px] py-3 px-4 rounded-lg text-left transition text-sm font-medium ${
                     selectedAnswer
                       ? ans === currentQuestion.Answer
                         ? "bg-green-600 text-white"
@@ -165,3 +141,4 @@ export default function QuizPage() {
     </div>
   );
 }
+
