@@ -1,23 +1,18 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const schema = z.object({
   name: z.string().min(3, "Lesson title is required"),
   content: z.string().min(10, "Description must be at least 10 characters"),
   categoryId: z.string().min(1, "Category is required"),
-  photo: z
-    .any()
-    .refine((files) => !files || files.length === 0 || files[0]?.size < 5_000_000, "Max photo size is 5MB"),
-  video: z
-    .any()
-    .refine((files) => !files || files.length === 0 || files[0]?.size < 20_000_000, "Max video size is 20MB"),
+  photo: z.any().optional(),
+  video: z.any().optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -25,6 +20,7 @@ type FormValues = z.infer<typeof schema>;
 export default function AddLessonPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
   const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
   const [previewVideo, setPreviewVideo] = useState<string | null>(null);
 
@@ -36,7 +32,22 @@ export default function AddLessonPage() {
     resolver: zodResolver(schema),
   });
 
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const res = await fetch("http://localhost:4000/categories");
+        const data = await res.json();
+        setCategories(data);
+      } catch (err) {
+        console.error("Failed to fetch categories:", err);
+      }
+    }
+
+    fetchCategories();
+  }, []);
+
   const onSubmit = async (data: FormValues) => {
+    setLoading(true);
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("content", data.content);
@@ -58,12 +69,13 @@ export default function AddLessonPage() {
       }
     } catch (err) {
       console.error("Error:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="flex min-h-screen flex-col relative">
-      {/* Color bar */}
       <div className="flex h-1 w-full">
         <div className="basis-[10%] bg-[#7D0F0F]" />
         <div className="basis-[35%] bg-[#C63224]" />
@@ -71,9 +83,7 @@ export default function AddLessonPage() {
         <div className="basis-[40%] bg-[#00C3F5]" />
       </div>
 
-      {/* Layout */}
       <div className="flex flex-col md:flex-row flex-1">
-        {/* Left side */}
         <div className="w-full md:w-1/2 bg-[#00262b] text-white flex items-center justify-center px-10 py-12">
           <div className="text-center md:text-left">
             <h1 className="text-3xl md:text-8xl italic font-black leading-tight">
@@ -83,120 +93,113 @@ export default function AddLessonPage() {
           </div>
         </div>
 
-        {/* Right side */}
         <div className="w-full md:w-1/2 flex items-start justify-center px-6 py-12">
           <form
             onSubmit={handleSubmit(onSubmit)}
             className="w-full max-w-sm space-y-4"
             encType="multipart/form-data"
           >
-            {/* Tabs */}
-            <div className="flex justify-start mb-4 text-sm font-medium text-[#00262b]">
-              <button
-                type="button"
-                className="px-4 pb-1 border-b-2 border-[#00262b] text-[#00262b]"
+            <div className="text-xl font-semibold text-[#00262b] mb-2">Add Lesson</div>
+
+            <input
+              {...register("name")}
+              type="text"
+              placeholder="Lesson title"
+              className="w-full px-4 py-2 border border-[#00262b] text-gray-700 "
+            />
+            {errors.name && <p className="text-sm text-red-600">{errors.name.message}</p>}
+
+            <textarea
+              {...register("content")}
+              placeholder="Lesson description..."
+              rows={4}
+              className="w-full px-4 py-2 border border-[#00262b] text-gray-700 "
+            />
+            {errors.content && <p className="text-sm text-red-600">{errors.content.message}</p>}
+
+            <select
+              {...register("categoryId")}
+              className="w-full px-4 py-2 border border-[#00262b] text-gray-700 "
+            >
+              <option value="">Select category</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id.toString()}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+            {errors.categoryId && <p className="text-sm text-red-600">{errors.categoryId.message}</p>}
+
+            {/* Photo Upload */}
+            <div>
+              <label className="block text-sm text-[#00262b] mb-1 pl-1">Lesson Image</label>
+              <label
+                htmlFor="photo"
+                className="bg-[#00262b] text-white text-sm px-4 py-2 h-10 flex items-center justify-center cursor-pointer hover:bg-[#001a1f] transition w-32 text-center"
               >
-                Add Lesson
-              </button>
-            </div>
-
-            <div>
-              <input
-                {...register("name")}
-                type="text"
-                placeholder="Lesson title"
-                className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded"
-              />
-              {errors.name && <p className="text-sm text-red-600">{errors.name.message}</p>}
-            </div>
-
-            <div>
-              <textarea
-                {...register("content")}
-                placeholder="Lesson description..."
-                rows={5}
-                className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded"
-              />
-              {errors.content && <p className="text-sm text-red-600">{errors.content.message}</p>}
-            </div>
-
-            <div>
-              <select
-                {...register("categoryId")}
-                className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded"
-              >
-                <option value="">-- Select category --</option>
-                <option value="1">Programming</option>
-                <option value="2">Music</option>
-                <option value="3">Art</option>
-              </select>
-              {errors.categoryId && <p className="text-sm text-red-600">{errors.categoryId.message}</p>}
-            </div>
-
-            {/* Photo */}
-            <div>
-             
-              <div className="flex items-center justify-between mb-2">
-                <label
-                  htmlFor="photo"
-                  className="bg-[#00262b] text-white text-sm px-4 py-2 h-10 flex items-center justify-center cursor-pointer hover:bg-[#001a1f] transition rounded w-32 text-center"
-                >
-                  Choose image
-                </label>
-                {previewPhoto && (
-                  <Image
-                    src={previewPhoto}
-                    alt="Preview"
-                    width={40}
-                    height={40}
-                    className="rounded object-cover"
-                  />
-                )}
-              </div>
+                Choose file
+              </label>
               <input
                 id="photo"
                 type="file"
                 accept="image/*"
                 {...register("photo")}
+                className="hidden"
                 onChange={(e) => {
                   const file = e.target.files?.[0];
-                  if (file) setPreviewPhoto(URL.createObjectURL(file));
+                  if (file) {
+                    setPreviewPhoto(URL.createObjectURL(file));
+                  }
+                  register("photo").onChange(e); // 🔧 ważne!
                 }}
-                className="hidden"
               />
+              {previewPhoto && (
+                <Image
+                  src={previewPhoto}
+                  alt="Preview"
+                  width={100}
+                  height={100}
+                  className="rounded mt-2"
+                />
+              )}
             </div>
 
-            {/* Video */}
+            {/* Video Upload */}
             <div>
-              
-              <div className="flex items-center justify-between mb-2">
-                <label
-                  htmlFor="video"
-                  className="bg-[#00262b] text-white text-sm px-4 py-2 h-10 flex items-center justify-center cursor-pointer hover:bg-[#001a1f] transition rounded w-32 text-center"
-                >
-                  Choose video
-                </label>
-              </div>
+              <label className="block text-sm text-[#00262b] mb-1 pl-1">Lesson Video</label>
+              <label
+                htmlFor="video"
+                className="bg-[#00262b] text-white text-sm px-4 py-2 h-10 flex items-center justify-center cursor-pointer hover:bg-[#001a1f] transition w-32 text-center"
+              >
+                Choose file
+              </label>
               <input
                 id="video"
                 type="file"
                 accept="video/*"
                 {...register("video")}
+                className="hidden"
                 onChange={(e) => {
                   const file = e.target.files?.[0];
-                  if (file) setPreviewVideo(URL.createObjectURL(file));
+                  if (file) {
+                    setPreviewVideo(URL.createObjectURL(file));
+                  }
+                  register("video").onChange(e); // 🔧 ważne!
                 }}
-                className="hidden"
               />
               {previewVideo && (
-                <video src={previewVideo} controls className="mt-2 rounded w-full h-auto max-h-48" />
+                <video
+                  src={previewVideo}
+                  controls
+                  className="mt-2 rounded w-full h-auto max-h-48"
+                />
               )}
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="bg-green-600 text-white px-5 py-2 hover:bg-green-700 transition rounded-full w-full"
+              className="bg-[#d64000] text-white px-5 py-2 hover:bg-orange-700 transition rounded-full w-full"
             >
               {loading ? "Submitting..." : "Add Lesson"}
             </button>
@@ -206,4 +209,5 @@ export default function AddLessonPage() {
     </div>
   );
 }
+
 

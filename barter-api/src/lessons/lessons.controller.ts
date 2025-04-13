@@ -4,6 +4,7 @@ import {
   UploadedFiles,
   UseInterceptors,
   Body,
+  Get,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -14,6 +15,11 @@ import { CreateLessonDto } from './dto/create-lesson.dto';
 @Controller('lessons')
 export class LessonsController {
   constructor(private readonly lessonsService: LessonsService) {}
+
+  @Get()
+  async findAll() {
+    return this.lessonsService.findAll();
+  }
 
   @Post()
   @UseInterceptors(
