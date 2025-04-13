@@ -46,17 +46,21 @@ const Header: React.FC = () => {
 
       {/* Buttons + User section */}
       <div className="flex items-center space-x-4">
-        <Link href="/cart" className="hidden sm:block">
-          <button className="p-2 rounded-full hover:bg-gray-100">
-            <ShoppingCart size={20} className="text-[#00262b]" />
-          </button>
-        </Link>
+        {user && (
+          <>
+            <Link href="/cart" className="hidden sm:block">
+              <button className="p-2 rounded-full hover:bg-gray-100">
+                <ShoppingCart size={20} className="text-[#00262b]" />
+              </button>
+            </Link>
 
-        <Link href="/lesson/create">
-          <button className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-[#00262b] text-white hover:bg-[#00404d] transition text-sm">
-            <Plus size={16} /> Add Lesson
-          </button>
-        </Link>
+            <Link href="/lesson/create">
+              <button className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-[#00262b] text-white hover:bg-[#00404d] transition text-sm">
+                <Plus size={16} /> Add Lesson
+              </button>
+            </Link>
+          </>
+        )}
 
         {user ? (
           <UserDropdown />
@@ -80,4 +84,3 @@ const Header: React.FC = () => {
 };
 
 export default Header;
-

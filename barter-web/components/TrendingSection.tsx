@@ -1,51 +1,57 @@
 "use client";
 
-const categories = [
-  "Python",
-  "Linux",
-  "JS Networks",
-  "HTML",
-  "Git",
-  "DevOps",
-  "DB",
-  "CSS",
-  "Cloud",
-  "Agile",
-  "Testing",
-  "Regex",
-  "Security",
-  "SQL",
-  "Others",
-];
+import { useEffect, useState } from "react";
+import LessonCard from "./LessonCard";
 
-const trendingOffers = [
-  {
-    image: "https://source.unsplash.com/600x400/?python,code",
-    title: "Python Debugging Masterclass",
-    author: "Ola K.",
-    category: "Python",
-  },
-  {
-    image: "https://source.unsplash.com/600x400/?linux,terminal",
-    title: "Linux CLI Challenge",
-    author: "Bartek L.",
-    category: "Linux",
-  },
-  {
-    image: "https://source.unsplash.com/600x400/?javascript,network",
-    title: "JavaScript for Real-Time Apps",
-    author: "Anna M.",
-    category: "JS Networks",
-  },
-  {
-    image: "https://source.unsplash.com/600x400/?sql,database",
-    title: "SQL Queries for Beginners",
-    author: "Kuba D.",
-    category: "SQL",
-  },
-];
+type Lesson = {
+  id: number;
+  name: string;
+  content: string;
+  photo?: string | null;
+  video?: string | null;
+  category: {
+    name: string;
+  };
+  instructor: {
+    firstName: string;
+    lastName: string;
+  };
+};
 
 export default function TrendingSection() {
+  const [lessons, setLessons] = useState<Lesson[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchLessons = async () => {
+      try {
+        const res = await fetch("http://localhost:4000/lessons", {
+          credentials: "include",
+        });
+        const data = await res.json();
+        console.log("Fetched lessons:", data);
+        setLessons(data);
+      } catch (err) {
+        console.error("Failed to fetch lessons", err);
+      }
+    };
+
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch("http://localhost:4000/categories", {
+          credentials: "include",
+        });
+        const data = await res.json();
+        setCategories(data.map((cat: any) => cat.name));
+      } catch (err) {
+        console.error("Failed to fetch categories", err);
+      }
+    };
+
+    fetchLessons();
+    fetchCategories();
+  }, []);
+
   return (
     <section className="bg-[#f9f9f9] py-16 px-4 sm:px-6 lg:px-12">
       <div className="max-w-7xl mx-auto">
@@ -65,28 +71,16 @@ export default function TrendingSection() {
 
         {/* Cards */}
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {trendingOffers.map((item, i) => (
-            <div
-              key={i}
-              className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
-            >
-              <div className="w-full h-40 bg-[#E1DDD0]">
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="p-4">
-                <h3 className="font-semibold text-[#00262b]">{item.title}</h3>
-                <p className="text-sm text-gray-600">{item.author}</p>
-              </div>
-              <div className="px-4 pb-4">
-                <span className="inline-block mt-2 bg-[#E1DDD0] text-xs px-3 py-1 rounded-full shadow text-gray-700">
-                  {item.category}
-                </span>
-              </div>
-            </div>
+          {lessons.map((lesson) => (
+            <LessonCard
+              key={lesson.id}
+              name={lesson.name}
+              content={lesson.content}
+              photo={lesson.photo}
+              video={lesson.video}
+              categoryName={lesson.category.name}
+              instructorName={`${lesson.instructor.firstName} ${lesson.instructor.lastName}`}
+            />
           ))}
         </div>
 

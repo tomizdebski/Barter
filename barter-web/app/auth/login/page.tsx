@@ -129,7 +129,7 @@ export default function LoginPage() {
                   {...register("email")}
                   type="email"
                   placeholder="Email"
-                  className="w-full px-4 py-2 border border-gray-300 focus:outline-none text-gray-700 rounded"
+                  className="w-full px-4 py-2 border border-#00262b focus:outline-none text-gray-700"
                 />
                 {errors.email && (
                   <p className="text-sm text-red-600 mt-1">
@@ -144,7 +144,7 @@ export default function LoginPage() {
                   {...register("password")}
                   type="password"
                   placeholder="Password"
-                  className="w-full px-4 py-2 border border-gray-300 focus:outline-none text-gray-700 rounded"
+                  className="w-full px-4 py-2 border border-[#00262b] focus:outline-none text-gray-700 "
                 />
                 {errors.password && (
                   <p className="text-sm text-red-600 mt-1">
@@ -163,7 +163,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="bg-[#d64000] text-white px-5 py-2 hover:bg-orange-700 transition rounded disabled:opacity-50"
+                  className="bg-[#d64000] text-white px-5 py-2 hover:bg-orange-700 transition rounded-full disabled:opacity-50"
                 >
                   {isSubmitting ? "Signing in..." : "Sign in"}
                 </button>
