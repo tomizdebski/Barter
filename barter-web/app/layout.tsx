@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google"; // <- Inter z next/font
 import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import Header from "@/components/main/Header";
+import Footer from "@/components/main/Footer";
 import ChatWidget from "@/components/chatAi/ChatWidget";
 import { UserProvider } from "@/contexts/UserContext";
 
