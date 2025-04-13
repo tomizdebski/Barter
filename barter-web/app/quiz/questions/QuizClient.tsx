@@ -14,7 +14,7 @@ type Question = {
   shuffledAnswers?: string[];
 };
 
-export default function QuizClient() {
+export default function QuizQuestionsClient() {
   const searchParams = useSearchParams();
   const topic = searchParams.get("topic") || "CSS";
   const router = useRouter();
@@ -86,10 +86,7 @@ export default function QuizClient() {
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-[#00262b] to-[#00404d] text-white p-4 flex flex-col">
       {/* Logo */}
-      <div
-        className="absolute top-4 left-4 z-50 cursor-pointer"
-        onClick={() => router.push("/")}
-      >
+      <div className="absolute top-4 left-4 z-50">
         <Image src="/icons/logo_l.svg" alt="Barter logo" width={40} height={40} />
       </div>
 
@@ -106,7 +103,7 @@ export default function QuizClient() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -30 }}
             transition={{ duration: 0.4 }}
-            className="text-center space-y-6 max-w-2xl w-full"
+            className="text-center space-y-6 max-w-2xl"
           >
             <h2 className="text-lg text-cyan-400 mb-2">
               Question {currentIndex + 1} of {questions.length}
@@ -121,7 +118,7 @@ export default function QuizClient() {
                   key={i}
                   onClick={() => handleAnswer(ans)}
                   disabled={!!selectedAnswer}
-                  className={`w-full min-w-[320px] py-3 px-4 rounded-lg text-left transition text-sm font-medium ${
+                  className={`py-3 px-4 rounded-lg text-left transition text-sm font-medium w-full max-w-xl mx-auto ${
                     selectedAnswer
                       ? ans === currentQuestion.Answer
                         ? "bg-green-600 text-white"
@@ -141,4 +138,3 @@ export default function QuizClient() {
     </div>
   );
 }
-
