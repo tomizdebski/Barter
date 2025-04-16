@@ -11,7 +11,6 @@ import { Plus, ShoppingCart } from "lucide-react";
 import QuizIcon from "../quiz/QuizIcon";
 import { useRouter } from "next/navigation";
 
-
 const Header: React.FC = () => {
   const pathname = usePathname();
   const hideOnAuthPages = pathname.startsWith("/auth");
@@ -30,8 +29,8 @@ const Header: React.FC = () => {
           <Image
             src="/icons/logo_d.svg"
             alt="Barter Icon"
-            width={64}
-            height={64}
+            width={90}
+            height={90}
             className="block sm:hidden cursor-pointer"
           />
           {/* Full logo (desktop) */}
@@ -68,7 +67,7 @@ const Header: React.FC = () => {
             </Link>
 
             <Link href="/lesson/create">
-              <button className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-[#00262b] text-white hover:bg-[#00404d] transition text-sm">
+              <button className="hidden sm:flex items-center justify-center gap-2 w-36 px-4 py-2 rounded-full bg-[#00262b] text-white hover:bg-[#00404d] transition text-sm whitespace-nowrap">
                 <Plus size={16} /> Add Lesson
               </button>
             </Link>

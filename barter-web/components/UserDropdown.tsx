@@ -38,7 +38,8 @@ const UserDropdown: React.FC = () => {
           alt={user.email}
           width={36}
           height={36}
-          className="w-9 h-9 rounded-full object-cover"
+          className="min-w-9 min-h-9 rounded-full object-cover"
+          
         />
         <ChevronDown size={18} />
       </button>
