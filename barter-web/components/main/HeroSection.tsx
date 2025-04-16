@@ -16,7 +16,7 @@ export default function HeroSection() {
         </p>
 
         {/* Searchbar */}
-        <div className="mt-8 flex flex-col sm:flex-row gap-3 items-center sm:items-start">
+        <div className="mt-8 flex flex-col sm:flex-row gap-3 items-start sm:items-start">
           <div className="flex-1 relative w-full max-w-md">
             <input
               type="text"
@@ -31,7 +31,7 @@ export default function HeroSection() {
               className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
             />
           </div>
-          <button className="bg-orange-600 text-white px-6 py-3 rounded-full hover:bg-orange-700 transition w-full sm:w-auto">
+          <button className="bg-orange-600 text-white px-6 py-3 rounded-full hover:bg-orange-700 transition sm:w-auto">
             Search
           </button>
         </div>
