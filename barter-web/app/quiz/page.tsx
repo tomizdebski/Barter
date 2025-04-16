@@ -1,10 +1,11 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import Link from "next/link";
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { useQuiz } from '@/contexts/QuizContext';
 
 type Category = { id: number; name: string };
 type Position = { x: number; y: number };
@@ -43,33 +44,36 @@ export default function QuizCategorySelector() {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [animationDone, setAnimationDone] = useState(false);
 
+  const { setCategory } = useQuiz(); // używamy kontekstu
+
   // Fetch categories
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const res = await fetch("http://localhost:4000/categories");
+        const res = await fetch('http://localhost:4000/categories');
         const data = await res.json();
         setCategories(data);
         setPositions(generatePositions(data.length));
       } catch (error) {
-        console.error("Failed to fetch categories", error);
+        console.error('Failed to fetch categories', error);
       }
     }
 
     fetchCategories();
   }, []);
 
-  // Navigate when animation ends
+  // Navigate after animation and set category in context
   useEffect(() => {
     if (animationDone && selectedIndex !== null && categories[selectedIndex]) {
       const topic = categories[selectedIndex].name;
-      router.push(`/quiz/start?topic=${encodeURIComponent(topic)}`);
+      setCategory(topic); // zapisz kategorię w kontekście
+      router.push('/quiz/start'); // bez query stringów!
     }
-  }, [animationDone, selectedIndex, categories, router]);
+  }, [animationDone, selectedIndex, categories, router, setCategory]);
 
   return (
     <div className="fixed inset-0 bg-[#00262b] text-white overflow-hidden z-50">
-        <div className="absolute top-4 left-4 z-50">
+      <div className="absolute top-4 left-4 z-50">
         <Link href="/">
           <Image
             src="/icons/logo_l.svg"
@@ -108,7 +112,7 @@ export default function QuizCategorySelector() {
                     }
                   : { scale: 1, opacity: 1 }
               }
-              transition={{ duration: 1.2, ease: "easeInOut" }}
+              transition={{ duration: 1.2, ease: 'easeInOut' }}
               onAnimationComplete={() => {
                 if (selectedIndex === index) {
                   setAnimationDone(true);
@@ -126,6 +130,7 @@ export default function QuizCategorySelector() {
     </div>
   );
 }
+
 
 
 

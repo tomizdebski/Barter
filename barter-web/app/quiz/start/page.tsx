@@ -1,21 +1,22 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
-import Link from "next/link";
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { useQuiz } from '@/contexts/QuizContext'; // <-- kontekst
 
 const QuizIntro = () => {
   const [countdown, setCountdown] = useState(3);
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const { category } = useQuiz(); // <-- z kontekstu
 
-  const topic = searchParams.get("topic") || "your skills";
+  const topic = category || 'your skills';
 
   useEffect(() => {
     if (countdown === 0) {
-      router.push(`/quiz/questions?topic=${encodeURIComponent(topic)}`);
+      router.push('/quiz/questions'); // <-- bez ?topic
       return;
     }
 
@@ -24,11 +25,11 @@ const QuizIntro = () => {
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [countdown, router, topic]);
+  }, [countdown, router]);
 
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-center bg-[#00262b] text-white z-50">
-        {/* Logo */}
+      {/* Logo */}
       <div className="absolute top-4 left-4 z-50">
         <Link href="/">
           <Image
@@ -39,6 +40,7 @@ const QuizIntro = () => {
           />
         </Link>
       </div>
+
       <motion.h1
         className="text-4xl sm:text-6xl font-bold italic text-center"
         initial={{ opacity: 0, y: 30 }}
@@ -63,7 +65,7 @@ const QuizIntro = () => {
         initial={{ scale: 0.5, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ type: "spring", stiffness: 300 }}
+        transition={{ type: 'spring', stiffness: 300 }}
       >
         {countdown}
       </motion.div>
@@ -72,4 +74,5 @@ const QuizIntro = () => {
 };
 
 export default QuizIntro;
+
 
