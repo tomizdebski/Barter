@@ -17,16 +17,16 @@ export default function SearchBar({
     e.preventDefault();
     if (query.trim()) {
       onSearch(query.trim());
-      setIsMobileOpen(false); // zamknij na mobile po wyszukaniu
+      setIsMobileOpen(false);
     }
   };
 
   return (
     <>
-      {/* Desktop */}
+      {/* Desktop input: only visible at 800px+ */}
       <form
         onSubmit={handleSubmit}
-        className="hidden sm:flex w-full sm:max-w-xl mx-auto items-center border border-[#00262b] rounded px-4 py-2"
+        className="hidden min-[800px]:flex w-full max-w-xl mx-auto items-center border border-[#00262b] rounded px-4 py-2"
       >
         <input
           type="text"
@@ -47,10 +47,10 @@ export default function SearchBar({
         </button>
       </form>
 
-      {/* Mobile Icon */}
+      {/* Mobile icon: only visible below 800px */}
       <button
         onClick={() => setIsMobileOpen(true)}
-        className="sm:hidden p-2"
+        className="block min-[800px]:hidden p-2"
         aria-label="Open search"
       >
         <Image
@@ -61,7 +61,7 @@ export default function SearchBar({
         />
       </button>
 
-      {/* Mobile full-screen search */}
+      {/* Slide-in mobile panel */}
       <AnimatePresence>
         {isMobileOpen && (
           <motion.div
@@ -69,7 +69,7 @@ export default function SearchBar({
             animate={{ y: 0 }}
             exit={{ y: "-100%" }}
             transition={{ duration: 0.3 }}
-            className="fixed top-0 left-0 w-full h-fit bg-white shadow-md z-50 p-4 flex flex-col gap-4 sm:hidden"
+            className="fixed top-0 left-0 w-full h-fit bg-white shadow-md z-50 p-4 flex flex-col gap-4 min-[800px]:hidden"
           >
             <div className="flex items-center gap-2 border border-[#00262b] rounded px-4 py-2">
               <Image
@@ -83,7 +83,7 @@ export default function SearchBar({
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search for skills or lessons..."
-                className="flex-1 text-[#00262b] focus:outline-none "
+                className="flex-1 text-[#00262b] focus:outline-none"
                 autoFocus
               />
             </div>
@@ -107,4 +107,5 @@ export default function SearchBar({
     </>
   );
 }
+
 
