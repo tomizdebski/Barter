@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useState } from "react";
 import Image from "next/image";
@@ -105,9 +105,11 @@ const Header: React.FC = () => {
 
       {/* Mobile view */}
       <div className="flex min-[800px]:hidden items-center justify-between w-full">
-        {/* Left: Hamburger */}
+        {/* Left: Avatar (if logged in) or Hamburger (if not) */}
         <div className="flex-shrink-0">
-          {!user && (
+          {user ? (
+            <UserDropdown />
+          ) : (
             <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2">
               <Menu size={24} className="text-[#00262b]" />
             </button>
@@ -190,6 +192,9 @@ const Header: React.FC = () => {
 };
 
 export default Header;
+
+
+
 
 
 
