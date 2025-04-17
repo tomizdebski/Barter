@@ -5,10 +5,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/contexts/UserContext";
-import UserDropdown from "../UserDropdown";
 import { Plus, ShoppingCart, Menu, X } from "lucide-react";
 import QuizIcon from "../quiz/QuizIcon";
 import { AnimatePresence, motion } from "framer-motion";
+import UserDropdown from "../UserDropdown";
 
 const Header: React.FC = () => {
   const pathname = usePathname();
@@ -30,10 +30,9 @@ const Header: React.FC = () => {
   if (hideOnAuthPages) return null;
 
   return (
-    <header className="bg-white shadow px-4 sm:px-6 py-3 sm:py-4 relative z-50">
+    <header className="relative bg-white shadow px-4 sm:px-6 py-3 sm:py-4 z-50">
       {/* Desktop view */}
       <div className="hidden min-[800px]:flex items-center justify-between">
-        {/* Logo */}
         <Link href="/">
           <Image
             src="/logo/logo.svg"
@@ -44,7 +43,6 @@ const Header: React.FC = () => {
           />
         </Link>
 
-        {/* Search bar */}
         <form
           onSubmit={handleSearchSubmit}
           className="flex w-full max-w-xl mx-4 items-center border border-[#00262b] rounded px-4 py-2"
@@ -61,10 +59,9 @@ const Header: React.FC = () => {
           </button>
         </form>
 
-        {/* Right-side actions */}
         <div className="flex items-center space-x-4">
           <Link href="/quiz">
-            <button className="p-2 rounded-full hover:bg-gray-100 items-center justify-center">
+            <button className="p-2 rounded-full hover:bg-gray-100">
               <QuizIcon />
             </button>
           </Link>
@@ -77,7 +74,7 @@ const Header: React.FC = () => {
                 </button>
               </Link>
               <Link href="/lesson/create">
-                <button className="flex items-center justify-center gap-2 w-36 px-4 py-2 rounded-full bg-[#00262b] text-white hover:bg-[#00404d] transition text-sm whitespace-nowrap">
+                <button className="flex items-center gap-2 w-36 px-4 py-2 rounded-full bg-[#00262b] text-white hover:bg-[#00404d] transition text-sm whitespace-nowrap">
                   <Plus size={16} /> Add Lesson
                 </button>
               </Link>
@@ -105,7 +102,7 @@ const Header: React.FC = () => {
 
       {/* Mobile view */}
       <div className="flex min-[800px]:hidden items-center justify-between w-full">
-        {/* Left: Avatar (if logged in) or Hamburger (if not) */}
+        {/* Left: Avatar z UserDropdown (który zawiera rozwijaną strzałkę) */}
         <div className="flex-shrink-0">
           {user ? (
             <UserDropdown />
@@ -137,7 +134,7 @@ const Header: React.FC = () => {
 
       {/* Mobile auth menu (popup) */}
       {isMenuOpen && !user && (
-        <div className="absolute top-16 left-4 right-4 bg-white border shadow-md rounded-lg p-4 flex flex-col gap-2 z-50 min-[800px]:hidden">
+        <div className="absolute top-full left-0 w-full bg-white border shadow-md rounded-b-lg p-4 flex flex-col gap-2 z-40 min-[800px]:hidden">
           <Link href="/auth/login">
             <button className="w-full text-left text-[#00262b] rounded hover:bg-gray-100 px-4 py-2 text-sm">
               Sign In
@@ -159,7 +156,7 @@ const Header: React.FC = () => {
             animate={{ y: 0 }}
             exit={{ y: "-100%" }}
             transition={{ duration: 0.3 }}
-            className="fixed top-0 left-0 w-full bg-white shadow-md z-50 p-4 flex flex-col gap-4 min-[800px]:hidden"
+            className="fixed top-0 left-0 w-full h-screen bg-white shadow-md z-50 p-4 flex flex-col gap-4 min-[800px]:hidden"
           >
             <div className="flex justify-between items-center mb-2">
               <span className="font-semibold text-[#00262b] text-lg">Search</span>
@@ -167,7 +164,10 @@ const Header: React.FC = () => {
                 <X size={24} className="text-[#00262b]" />
               </button>
             </div>
-            <form onSubmit={handleSearchSubmit} className="flex items-center border border-[#00262b] rounded px-4 py-2">
+            <form
+              onSubmit={handleSearchSubmit}
+              className="flex items-center border border-[#00262b] rounded px-4 py-2"
+            >
               <Image src="/icons/search.svg" alt="Search icon" width={20} height={20} />
               <input
                 type="text"
@@ -192,9 +192,4 @@ const Header: React.FC = () => {
 };
 
 export default Header;
-
-
-
-
-
 
