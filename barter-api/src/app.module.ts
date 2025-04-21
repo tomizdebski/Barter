@@ -8,6 +8,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { QuizModule } from './quiz/quiz.module';
 import { LessonsModule } from './lessons/lessons.module';
 import { CategoriesModule } from './categories/categories.module';
+import { ChatModule } from './chat/chat.module';
 import * as path from 'path';
 
 @Module({
@@ -22,6 +23,7 @@ import * as path from 'path';
     QuizModule,
     LessonsModule,
     CategoriesModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],
