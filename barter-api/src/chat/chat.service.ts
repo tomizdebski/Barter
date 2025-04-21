@@ -1,29 +1,62 @@
+// src/chat/chat.service.ts
 import { Injectable } from '@nestjs/common';
-import fetch from 'node-fetch';
+import { Observable } from 'rxjs';
+import { buildSystemPrompt } from '../utils/buildSystemPrompt';
 
 @Injectable()
 export class ChatService {
-  async askLlama(prompt: string): Promise<string> {
-    const res = await fetch('http://localhost:11434/api/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'llama3',
-        prompt,
-        stream: false,
-      }),
+  streamLlamaResponse(userId: number, userInput: string): Observable<string> {
+    return new Observable((subscriber) => {
+      (async () => {
+        const prompt = await buildSystemPrompt(userId, userInput); // ⬅️ dynamiczny prompt z bazy
+
+        const response = await fetch('http://localhost:11434/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'mistral',
+            prompt,
+            stream: true,
+          }),
+        });
+
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder('utf-8');
+
+        if (!reader) {
+          subscriber.error('Brak readera z Ollama');
+          return;
+        }
+
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+
+          const lines = buffer.split('\n');
+          for (let i = 0; i < lines.length - 1; i++) {
+            const line = lines[i].trim();
+            if (!line) continue;
+
+            try {
+              const parsed = JSON.parse(line);
+              if (parsed.response) {
+                subscriber.next(parsed.response);
+              }
+            } catch (e) {
+              console.warn('Błąd parsowania linii:', line);
+            }
+          }
+
+          buffer = lines[lines.length - 1];
+        }
+
+        subscriber.complete();
+      })();
     });
-
-    const data = await res.json();
-    console.log('🧠 Odpowiedź z LLaMA:', data);
-
-    // Sprawdź czy pole `response` istnieje
-    if (!data.response) {
-      console.warn('⚠️ Brak odpowiedzi od LLaMA!');
-      return '[Brak odpowiedzi]';
-    }
-
-    return data.response;
   }
 }
 

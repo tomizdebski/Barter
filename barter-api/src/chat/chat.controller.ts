@@ -1,15 +1,17 @@
-
-import { Body, Controller, Post } from '@nestjs/common';
+import { Controller, Sse, Query, Res } from '@nestjs/common';
+import { Response } from 'express';
+import { Observable } from 'rxjs';
 import { ChatService } from './chat.service';
 
 @Controller('chat')
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
-  @Post()
-  async chat(@Body('message') message: string) {
-    const reply = await this.chatService.askLlama(message);
-    return { reply };
+  @Sse('stream')
+  stream(
+    @Query('userId') userId: string,
+    @Query('prompt') prompt: string,
+  ): Observable<string> {
+    return this.chatService.streamLlamaResponse(parseInt(userId), prompt);
   }
 }
-
