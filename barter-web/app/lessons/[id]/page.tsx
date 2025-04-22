@@ -32,46 +32,68 @@ export default async function LessonDetailPage({ params }: { params: { id: strin
   if (!lesson) return notFound()
 
   return (
-    <div className="min-h-screen bg-[#00262b] text-white py-12 px-4 flex justify-center">
-      <div className="bg-white text-gray-800 w-full max-w-4xl p-6 md:p-10 rounded-xl shadow-lg space-y-8">
-        <div className="w-full h-56 md:h-80 relative rounded-lg overflow-hidden">
-          <Image
-            src={lesson.thumbnail}
-            alt={lesson.title}
-            fill
-            className="object-cover"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold">{lesson.title}</h1>
-          <p className="text-sm text-gray-600">Skill: {lesson.skill} • Location: {lesson.location}</p>
-        </div>
-
-        <p className="text-gray-700 leading-relaxed">{lesson.description}</p>
-
-        <div className="flex items-center gap-4 pt-4">
-          <div className="w-14 h-14 rounded-full bg-gray-300 relative overflow-hidden">
+    <div className="min-h-screen bg-gray-100 text-gray-800 py-8 px-4">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left column: image and description */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="w-full h-72 md:h-96 relative rounded-lg overflow-hidden bg-white">
             <Image
-              src={lesson.instructor.avatar}
-              alt={lesson.instructor.name}
+              src={lesson.thumbnail}
+              alt={lesson.title}
               fill
               className="object-cover"
             />
           </div>
-          <div>
-            <p className="font-semibold">{lesson.instructor.name}</p>
-            <p className="text-sm text-gray-600">{lesson.instructor.bio}</p>
+
+          <div className="bg-white p-6 rounded-md shadow-sm">
+            <h1 className="text-2xl font-bold mb-2">{lesson.title}</h1>
+            <p className="text-sm text-gray-600 mb-4">Skill: {lesson.skill} • Location: {lesson.location}</p>
+            <p className="leading-relaxed text-gray-700">{lesson.description}</p>
           </div>
         </div>
 
-        <div className="flex gap-4 pt-6">
-          <button className="bg-orange-600 text-white px-6 py-2 rounded-full hover:bg-orange-700 transition">
-            Propose Barter
-          </button>
-          <span className="text-sm text-gray-600 self-center">Value: {lesson.points} points</span>
+        {/* Right column: details */}
+        <div className="space-y-6">
+          <div className="bg-white p-6 rounded-md shadow-sm">
+            <p className="text-sm text-gray-500 mb-2">Instructor</p>
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-full bg-gray-300 relative overflow-hidden">
+                <Image
+                  src={lesson.instructor.avatar}
+                  alt={lesson.instructor.name}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div>
+                <p className="font-semibold">{lesson.instructor.name}</p>
+                <p className="text-sm text-gray-600">{lesson.instructor.bio}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-md shadow-sm">
+            <p className="text-sm text-gray-500 mb-2">Barter value</p>
+            <p className="text-lg font-semibold">{lesson.points} points</p>
+          </div>
+
+          <div className="bg-white p-6 rounded-md shadow-sm">
+            <p className="text-sm text-gray-500 mb-2">Location</p>
+            <p className="text-sm">{lesson.location}</p>
+          </div>
+
+          <div className="bg-white p-6 rounded-md shadow-sm flex flex-col gap-3">
+            <button className="bg-[#00262b] text-white px-6 py-2 rounded-md hover:bg-[#00404d] transition">
+              Propose barter
+            </button>
+            <button className="border border-[#00262b] text-[#00262b] px-6 py-2 rounded-md hover:bg-gray-100 transition">
+              Ask a question
+            </button>
+          </div>
         </div>
       </div>
     </div>
   )
 }
+
+
