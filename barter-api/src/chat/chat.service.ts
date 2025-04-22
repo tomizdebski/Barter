@@ -8,9 +8,14 @@ export class ChatService {
   streamLlamaResponse(userId: number, userInput: string): Observable<string> {
     return new Observable((subscriber) => {
       (async () => {
-        const prompt = await buildSystemPrompt(userId, userInput); // ⬅️ dynamiczny prompt z bazy
+        const prompt = await buildSystemPrompt(userId, userInput); // ⬅️
 
-        const response = await fetch('http://localhost:11434/api/generate', {
+        if (!process.env.URL_LLM) {
+          subscriber.error('Environment variable URL_LLM is not defined');
+          return;
+        }
+
+        const response = await fetch(process.env.URL_LLM, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

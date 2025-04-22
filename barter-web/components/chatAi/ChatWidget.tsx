@@ -1,15 +1,70 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
-import ChatAiWithEyes from "./ChatAiWithEyes"; // Twój czatbot z oczami
+import ChatAiWithEyes from "./ChatAiWithEyes";
+import { useUser } from "@/contexts/UserContext";
+
+type Message = {
+  role: "user" | "bot" | "bot-temp";
+  text: string;
+};
 
 export default function ChatWidget() {
+  const { user } = useUser();
   const [isOpen, setIsOpen] = useState(false);
+  const [input, setInput] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const chatRef = useRef<HTMLDivElement>(null);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+
+    if (!user?.id) {
+      alert("Musisz być zalogowany, aby korzystać z czatu.");
+      return;
+    }
+
+    const userMessage: Message = { role: "user", text: input };
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
+
+    const eventSource = new EventSource(
+      `http://localhost:4000/chat/stream?userId=${user.id}&prompt=${encodeURIComponent(
+        input
+      )}`
+    );
+
+    let botText = "";
+
+    eventSource.onmessage = (e) => {
+      botText += e.data;
+      setMessages((prev) => {
+        const others = prev.filter((m) => m.role !== "bot-temp");
+        return [...others, { role: "bot-temp", text: botText }];
+      });
+
+      setTimeout(() => {
+        chatRef.current?.scrollTo(0, chatRef.current.scrollHeight);
+      }, 10);
+    };
+
+    eventSource.onerror = () => {
+      eventSource.close();
+      setMessages((prev) => {
+        const temp = prev.find((m) => m.role === "bot-temp");
+        const others = prev.filter((m) => m.role !== "bot-temp");
+        return [
+          ...others,
+          { role: "bot", text: temp?.text || "[Błąd odpowiedzi]" },
+        ];
+      });
+    };
+  };
 
   return (
     <div className="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">
-      {/* Ikona czatu */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
@@ -20,7 +75,6 @@ export default function ChatWidget() {
         </button>
       )}
 
-      {/* Panel czatu */}
       {isOpen && (
         <div className="w-[95vw] max-w-[360px] h-[85vh] max-h-[600px] bg-white rounded-xl shadow-xl flex flex-col overflow-hidden">
           {/* Pasek górny */}
@@ -42,25 +96,35 @@ export default function ChatWidget() {
             </button>
           </div>
 
-          {/* Treść */}
-          <div className="p-4 flex-1 overflow-y-auto text-sm text-gray-700 border-b">
-            <p>
-              Before we get started; just a reminder that this chat is AI
-              generated, mistakes are possible. By using it you agree that
-              Barter may create a record of this chat. Your personal data will
-              be used as described in our{" "}
-              <a href="#" className="underline">
-                privacy policy
-              </a>
-              .
-            </p>
+          {/* Wiadomości */}
+          <div
+            ref={chatRef}
+            className="p-4 flex-1 overflow-y-auto text-sm text-gray-700 border-b space-y-2"
+          >
+            {messages.map((msg, i) => (
+              <div
+                key={i}
+                className={`p-2 rounded-lg max-w-[80%] whitespace-pre-wrap ${
+                  msg.role === "user"
+                    ? "bg-[#00262b] text-white ml-auto"
+                    : "bg-gray-100 text-gray-900"
+                }`}
+              >
+                {msg.text}
+              </div>
+            ))}
           </div>
 
           {/* Input */}
-          <form className="p-3 border-t flex items-center">
+          <form
+            onSubmit={handleSubmit}
+            className="p-3 border-t flex items-center"
+          >
             <input
               type="text"
-              placeholder="Write a message"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Napisz wiadomość..."
               className="flex-1 border border-[#00262b] text-[#00262b] rounded px-3 py-2 text-sm focus:outline-none"
             />
             <button type="submit" className="ml-2 text-[#00262b]">
