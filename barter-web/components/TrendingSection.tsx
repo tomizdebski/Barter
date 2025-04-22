@@ -74,6 +74,7 @@ export default function TrendingSection() {
           {lessons.map((lesson) => (
             <LessonCard
               key={lesson.id}
+              id={lesson.id}
               name={lesson.name}
               content={lesson.content}
               photo={lesson.photo}

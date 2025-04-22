@@ -6,12 +6,16 @@ import {
   Body,
   Get,
   Query,
+  Param,
+  Patch,
+  Delete,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { LessonsService } from './lessons.service';
 import { extname } from 'path';
 import { CreateLessonDto } from './dto/create-lesson.dto';
+import { UpdateLessonDto } from './dto/update-lesson.dto'; // musisz mieć ten DTO
 
 @Controller('lessons')
 export class LessonsController {
@@ -25,6 +29,11 @@ export class LessonsController {
   @Get('search')
   async searchLessons(@Query('q') query: string) {
     return this.lessonsService.search(query);
+  }
+
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    return this.lessonsService.findById(id);
   }
 
   @Post()
@@ -60,7 +69,18 @@ export class LessonsController {
 
     return this.lessonsService.create(body, photo, video);
   }
+
+  @Patch(':id')
+  async update(@Param('id') id: string, @Body() body: UpdateLessonDto) {
+    return this.lessonsService.update(id, body);
+  }
+
+  @Delete(':id')
+  async remove(@Param('id') id: string) {
+    return this.lessonsService.delete(id);
+  }
 }
+
 
   
   
