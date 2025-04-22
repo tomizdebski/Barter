@@ -30,7 +30,7 @@ export default function QuizQuestionsPage() {
 
   useEffect(() => {
     async function fetchQuestions() {
-      const res = await fetch(`http://localhost:4000/quiz?count=20&topic=${encodeURIComponent(topic)}`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/quiz?count=20&topic=${encodeURIComponent(topic)}`);
       const data = await res.json();
 
       const questionsWithShuffledAnswers = data.pytania.map((q: Question) => ({
