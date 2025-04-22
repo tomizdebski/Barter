@@ -6,6 +6,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/contexts/UserContext"; 
 
 const schema = z.object({
   name: z.string().min(3, "Lesson title is required"),
@@ -18,6 +19,7 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 export default function AddLessonPage() {
+  const { user } = useUser();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
@@ -48,10 +50,15 @@ export default function AddLessonPage() {
 
   const onSubmit = async (data: FormValues) => {
     setLoading(true);
+    if (!user?.id) {
+      console.error("User not logged in");
+      return;
+    }
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("content", data.content);
     formData.append("categoryId", data.categoryId);
+    formData.append("instructorId", user.id.toString());
     if (data.photo?.[0]) formData.append("photo", data.photo[0]);
     if (data.video?.[0]) formData.append("video", data.video[0]);
 

@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
+import { UpdateLessonDto } from './dto/update-lesson.dto';
 
 @Injectable()
 export class LessonsService {
   constructor(private prisma: PrismaService) {}
 
-  
   async findAll() {
     return this.prisma.lessons.findMany({
       include: {
@@ -24,7 +24,7 @@ export class LessonsService {
         OR: [
           { name: { contains: query, mode: 'insensitive' } },
           { content: { contains: query, mode: 'insensitive' } },
-          { category: { name: { contains: query, mode: 'insensitive' } } }, // <-- tu!
+          { category: { name: { contains: query, mode: 'insensitive' } } },
         ],
       },
       include: {
@@ -38,7 +38,19 @@ export class LessonsService {
       },
     });
   }
-  
+
+  async findById(id: string) {
+    const lesson = await this.prisma.lessons.findUnique({
+      where: { id: parseInt(id) },
+      include: {
+        category: true,
+        instructor: true,
+      },
+    });
+
+    if (!lesson) throw new NotFoundException('Lesson not found');
+    return lesson;
+  }
 
   async create(
     dto: any,
@@ -52,10 +64,24 @@ export class LessonsService {
         categoryId: parseInt(dto.categoryId),
         photo: photo ? `uploads/${photo.filename}` : null,
         video: video ? `uploads/${video.filename}` : null,
-        instructorId: 2, // zamień na userId z tokena, jeśli już masz auth
+        instructorId: dto.instructorId,
       },
     });
   }
+
+  async update(id: string, dto: UpdateLessonDto) {
+    return this.prisma.lessons.update({
+      where: { id: parseInt(id) },
+      data: dto,
+    });
+  }
+
+  async delete(id: string) {
+    return this.prisma.lessons.delete({
+      where: { id: parseInt(id) },
+    });
+  }
 }
+
 
 
