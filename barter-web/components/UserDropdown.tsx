@@ -119,7 +119,7 @@ const UserDropdown: React.FC = () => {
             </button>
             <Link href="/profile" className="w-full text-left px-4 py-2 hover:bg-gray-100 block">Profile</Link>
             <Link href="/account" className="w-full text-left px-4 py-2 hover:bg-gray-100 block">Account</Link>
-            <Link href="/lesson/create" className="w-full text-left px-4 py-2 hover:bg-gray-100 block">Add barter</Link>
+            <Link href="/lessons/create" className="w-full text-left px-4 py-2 hover:bg-gray-100 block">Add lesson</Link>
             <Link href="/my-basket" className="w-full text-left px-4 py-2 hover:bg-gray-100 block">My basket</Link>
           </div>
 

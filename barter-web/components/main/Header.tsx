@@ -73,7 +73,7 @@ const Header: React.FC = () => {
                   <ShoppingCart size={20} className="text-[#00262b]" />
                 </button>
               </Link>
-              <Link href="/lesson/create">
+              <Link href="/lessons/create">
                 <button className="flex items-center gap-2 w-36 px-4 py-2 rounded-full bg-[#00262b] text-white hover:bg-[#00404d] transition text-sm whitespace-nowrap">
                   <Plus size={16} /> Add Lesson
                 </button>
