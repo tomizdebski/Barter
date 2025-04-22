@@ -1,11 +1,15 @@
 // app/lessons/[id]/page.tsx
 
-import Image from 'next/image'
-import { notFound } from 'next/navigation'
-import type { Metadata } from 'next'
+import Image from 'next/image';
+import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
+import ImageVideoSwitcher from '@/components/ImageVideoCarousel';
 
-export const metadata: Metadata = {
-  title: 'Lesson Details | Barter App',
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const lesson = await getLesson(params.id);
+  return {
+    title: lesson?.name ? `${lesson.name} | Barter App` : 'Lesson Details | Barter App',
+  };
 }
 
 async function getLesson(id: string) {
@@ -31,14 +35,7 @@ export default async function LessonDetailPage({ params }: { params: { id: strin
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left column: image and description */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="w-full h-72 md:h-96 relative rounded-lg overflow-hidden bg-white">
-            <Image
-              src={`http://localhost:4000/${lesson.photo}`}
-              alt={lesson.name}
-              fill
-              className="object-cover"
-            />
-          </div>
+          <ImageVideoSwitcher photo={lesson.photo} video={lesson.video} title={lesson.name} />
 
           <div className="bg-white p-6 rounded-md shadow-sm">
             <h1 className="text-2xl font-bold mb-2">{lesson.name}</h1>
@@ -56,7 +53,7 @@ export default async function LessonDetailPage({ params }: { params: { id: strin
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-full bg-gray-300 relative overflow-hidden">
                 <Image
-                  src={`http://localhost:4000/${lesson.instructor.avatarUrl}`}
+                  src={`http://localhost:4000/${lesson.instructor.avatar}`}
                   alt={lesson.instructor.firstName}
                   fill
                   className="object-cover"
@@ -94,5 +91,4 @@ export default async function LessonDetailPage({ params }: { params: { id: strin
     </div>
   );
 }
-
 
