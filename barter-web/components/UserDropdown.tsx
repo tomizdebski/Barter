@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useUser } from "@/contexts/UserContext";
 import { ChevronDown, X } from "lucide-react";
+import Link from "next/link";
 
 const UserDropdown: React.FC = () => {
   const { user, logout } = useUser();
@@ -111,21 +112,20 @@ const UserDropdown: React.FC = () => {
           </div>
 
           <div className="text-sm text-[#00262b]">
-            <div className="px-4 py-2 text-gray-500 uppercase text-xs">Switch Dashboard</div>
-            <button className="w-full text-left px-4 py-2 hover:bg-[#00262b] hover:text-white">
-              Personal
-            </button>
+            
+            
             <button className="w-full text-left px-4 py-2 flex items-center justify-between hover:bg-gray-100">
-              Career <span className="bg-yellow-300 text-xs px-2 py-0.5 rounded">New</span>
+              Dashboard
             </button>
-            <button className="w-full text-left px-4 py-2 hover:bg-gray-100">Profile</button>
-            <button className="w-full text-left px-4 py-2 hover:bg-gray-100">Account</button>
-            <button className="w-full text-left px-4 py-2 hover:bg-gray-100">Order History</button>
+            <Link href="/profile" className="w-full text-left px-4 py-2 hover:bg-gray-100 block">Profile</Link>
+            <Link href="/account" className="w-full text-left px-4 py-2 hover:bg-gray-100 block">Account</Link>
+            <Link href="/lesson/create" className="w-full text-left px-4 py-2 hover:bg-gray-100 block">Add barter</Link>
+            <Link href="/my-basket" className="w-full text-left px-4 py-2 hover:bg-gray-100 block">My basket</Link>
           </div>
 
           <button
             onClick={logout}
-            className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 border-t"
+            className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 border-t border-t-[#00262b]"
           >
             Sign Out
           </button>
