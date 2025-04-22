@@ -37,7 +37,7 @@ export default function AddLessonPage() {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const res = await fetch("http://localhost:4000/categories");
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`);
         const data = await res.json();
         setCategories(data);
       } catch (err) {
@@ -63,7 +63,7 @@ export default function AddLessonPage() {
     if (data.video?.[0]) formData.append("video", data.video[0]);
 
     try {
-      const res = await fetch("http://localhost:4000/lessons", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/lessons`, {
         method: "POST",
         body: formData,
         credentials: "include",

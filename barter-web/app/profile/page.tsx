@@ -26,7 +26,7 @@ export default function ProfilePage() {
           <div className="flex items-center gap-4">
             <div className="w-20 h-20 rounded-full bg-gray-300 relative overflow-hidden">
               <Image
-                src={`http://localhost:4000/${user.avatarUrl}`}
+                src={`${process.env.NEXT_PUBLIC_API_URL}/${user.avatarUrl}`}
                 alt="User avatar"
                 fill
                 className="object-cover"

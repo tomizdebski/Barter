@@ -25,7 +25,7 @@ export default function SearchPage() {
     setQuery(term);
     setSearching(true);
     try {
-      const res = await fetch(`http://localhost:4000/lessons/search?q=${encodeURIComponent(term)}`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/lessons/search?q=${encodeURIComponent(term)}`);
       const data = await res.json();
       setResults(data);
     } catch (err) {
@@ -72,6 +72,7 @@ export default function SearchPage() {
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {results.map((lesson) => (
                 <LessonCard
+                id={lesson.id}
                   key={lesson.id}
                   name={lesson.name}
                   content={lesson.content}

@@ -9,7 +9,8 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthDto } from './dto/auth.dto';
+import { SignUpDto } from './dto/signup.dto';
+import { SigninDto } from './dto/signin.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 
@@ -35,7 +36,7 @@ export class AuthController {
     }),
   )
   async signup(
-    @Body() dto: AuthDto,
+    @Body() dto: SignUpDto,
     @UploadedFile() avatar: Express.Multer.File,
   ) {
     // Jeśli avatar jest przesyłany, dodajemy jego ścieżkę do DTO
@@ -53,7 +54,7 @@ export class AuthController {
   }
 
   @Post('signin')
-  async signin(@Body() dto: AuthDto, @Req() req, @Res() res) {
+  async signin(@Body() dto: SigninDto, @Req() req, @Res() res) {
     return this.authService.signin(dto, req, res);
   }
 

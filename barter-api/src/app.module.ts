@@ -9,6 +9,7 @@ import { QuizModule } from './quiz/quiz.module';
 import { LessonsModule } from './lessons/lessons.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ChatModule } from './chat/chat.module';
+import { MessagesModule } from './messages/messages.module';
 import * as path from 'path';
 
 @Module({
@@ -24,6 +25,7 @@ import * as path from 'path';
     LessonsModule,
     CategoriesModule,
     ChatModule,
+    MessagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
