@@ -10,6 +10,7 @@ import { LessonsModule } from './lessons/lessons.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ChatModule } from './chat/chat.module';
 import { MessagesModule } from './messages/messages.module';
+import { BartersModule } from './barters/barters.module';
 import * as path from 'path';
 
 @Module({
@@ -26,6 +27,7 @@ import * as path from 'path';
     CategoriesModule,
     ChatModule,
     MessagesModule,
+    BartersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

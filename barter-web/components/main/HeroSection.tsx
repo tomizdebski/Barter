@@ -1,6 +1,20 @@
-import Image from "next/image";
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 
 export default function HeroSection() {
+  const [query, setQuery] = useState('')
+  const router = useRouter()
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (query.trim()) {
+      router.push(`/search?q=${encodeURIComponent(query)}`)
+    }
+  }
+
   return (
     <section className="relative w-full h-auto md:h-[600px] bg-[#00262b] overflow-hidden flex flex-col md:flex-row">
       {/* Lewa część - tekst */}
@@ -16,10 +30,15 @@ export default function HeroSection() {
         </p>
 
         {/* Searchbar */}
-        <div className="mt-6 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center w-full max-w-md">
+        <form
+          onSubmit={handleSearch}
+          className="mt-6 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center w-full max-w-md"
+        >
           <div className="relative w-full">
             <input
               type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
               placeholder="Search our 4000+ skills..."
               className="bg-white w-full py-3 px-4 rounded-md text-gray-800 focus:outline-none"
             />
@@ -31,10 +50,13 @@ export default function HeroSection() {
               className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
             />
           </div>
-          <button className="bg-orange-600 text-white px-6 py-3 rounded-full hover:bg-orange-700 transition w-full sm:w-auto">
+          <button
+            type="submit"
+            className="bg-orange-600 text-white px-6 py-3 rounded-full hover:bg-orange-700 transition w-full sm:w-auto"
+          >
             Search
           </button>
-        </div>
+        </form>
       </div>
 
       {/* Prawa część – obrazek */}
@@ -47,5 +69,5 @@ export default function HeroSection() {
         />
       </div>
     </section>
-  );
+  )
 }

@@ -11,7 +11,8 @@ export async function generateMetadata({
 }: {
   params: { id: string };
 }): Promise<Metadata> {
-  const lesson = await getLesson(params.id);
+  const param = await params;
+  const lesson = await getLesson(param.id);
   return {
     title: lesson?.name
       ? `${lesson.name} | Barter App`
@@ -26,19 +27,18 @@ async function getLesson(id: string) {
     });
 
     if (!res.ok) return null;
-    return res.json();
+    return await res.json(); 
   } catch (err) {
     console.error("Error fetching lesson:", err);
     return null;
   }
 }
 
-export default async function LessonDetailPage({
-  params,
-}: {
+export default async function LessonDetailPage({ params }: {
   params: { id: string };
 }) {
-  const lesson = await getLesson(params.id);
+  const param = await  params;
+  const lesson = await getLesson(param.id);
   if (!lesson) return notFound();
 
   return (

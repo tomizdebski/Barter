@@ -1,0 +1,4 @@
+##
+GET http://localhost:4000/api/secure
+Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE0IiwiZW1haWwiOiJhZmRAZmRzZGhjZGZnaGR4aC5jb20iLCJmaXJzdE5hbWUiOiJUb21layIsImxhc3ROYW1lIjoiSXpkZWJza2kiLCJhdmF0YXJVcmwiOm51bGwsImlhdCI6MTc0NTQzNzYwOCwiZXhwIjoxNzQ2MDQyNDA4fQ.Ktz4ZAylyKMuuX9W8
+
