@@ -1,10 +1,16 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  canActivate(context: ExecutionContext) {
+  canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
-    // Sprawdź, czy użytkownik jest zalogowany na podstawie session.userId
-    return !!request.session?.userId; // Zwraca true, jeśli userId istnieje
+    console.log('AuthGuard: session =', request.session);
+
+    if (!request.session?.userId) {
+      throw new UnauthorizedException('User not authenticated');
+    }
+
+    return true;
   }
 }
+

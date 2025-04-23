@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsEmail, Length } from 'class-validator';
+import { IsNotEmpty, IsString, IsEmail, Length, IsOptional } from 'class-validator';
 
 export class SignUpDto {
   @IsNotEmpty()
@@ -19,6 +19,7 @@ export class SignUpDto {
   @Length(3, 20, { message: 'Password must be between 3 and 20 characters' })
   public password: string;
 
+  @IsOptional()
   public avatar?: string | null;
 }
 
