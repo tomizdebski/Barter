@@ -13,7 +13,7 @@
 - 💬 AI chatbot interface with eye-tracking interaction
 - 🌐 Language-ready with i18n support structure
 - 📚 Skill categories like Python, Git, DevOps, SQL, Security, and more
-- 🎨 Custom design inspired by edX and Vercel aesthetics
+- 🎨 Custom design 
 
 ---
 
