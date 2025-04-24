@@ -12,13 +12,29 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiQuery,
+  ApiParam,
+  ApiBody,
+} from '@nestjs/swagger';
 
+@ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // Endpoint do pobierania wszystkich użytkowników
   @Get()
+  @ApiOperation({ summary: 'Get all users or search by email' })
+  @ApiQuery({
+    name: 'email',
+    required: false,
+    description: 'Optional email to search for a specific user',
+    example: 'user@example.com',
+  })
+  @ApiResponse({ status: 200, description: 'List of users or one user if email is given' })
   async getUsers(@Query('email') email?: string) {
     if (email) {
       return this.usersService.findByEmail(email);
@@ -26,13 +42,22 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  // Endpoint do pobierania użytkownika po ID
   @Get(':id')
+  @ApiOperation({ summary: 'Get user by ID' })
+  @ApiParam({ name: 'id', description: 'User ID (number)' })
+  @ApiResponse({ status: 200, description: 'User found by ID' })
   async getUser(@Param('id') id: string) {
     return this.usersService.findById(+id);
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: 'Update user by ID' })
+  @ApiParam({ name: 'id', description: 'User ID (number)' })
+  @ApiBody({ type: UpdateUserDto })
+  @ApiResponse({ status: 200, description: 'User updated successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid user ID' })
+  @ApiResponse({ status: 409, description: 'Email already in use' })
+  @ApiResponse({ status: 500, description: 'Update failed due to server error' })
   async updateUser(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
@@ -61,6 +86,9 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete user by ID' })
+  @ApiParam({ name: 'id', description: 'User ID (number)' })
+  @ApiResponse({ status: 200, description: 'User deleted successfully' })
   async deleteUser(@Param('id') id: string) {
     return this.usersService.deleteUser(+id);
   }

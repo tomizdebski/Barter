@@ -1,13 +1,27 @@
-import { Controller, Sse, Query, Res } from '@nestjs/common';
-import { Response } from 'express';
+import { Controller, Sse, Query } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { ChatService } from './chat.service';
+import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Chat')
 @Controller('chat')
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Sse('stream')
+  @ApiOperation({ summary: 'Stream LLM response as server-sent events (SSE)' })
+  @ApiQuery({
+    name: 'userId',
+    required: true,
+    description: 'ID of the user requesting the stream',
+    example: '1',
+  })
+  @ApiQuery({
+    name: 'prompt',
+    required: true,
+    description: 'Prompt sent to the LLM (e.g. Mistral/Ollama)',
+    example: 'What is barter?',
+  })
   stream(
     @Query('userId') userId: string,
     @Query('prompt') prompt: string,
@@ -15,3 +29,4 @@ export class ChatController {
     return this.chatService.streamLlamaResponse(parseInt(userId), prompt);
   }
 }
+

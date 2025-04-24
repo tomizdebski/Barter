@@ -7,29 +7,55 @@ import {
   Request,
 } from '@nestjs/common';
 import { BartersService } from './barters.service';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard'; // 🔒 import właściwego guarda
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+
+@ApiTags('Barters')
+@ApiBearerAuth() // 🔐 Wymaga JWT w Swaggerze
 @Controller('barters')
 export class BartersController {
   constructor(private readonly bartersService: BartersService) {}
 
   @UseGuards(JwtAuthGuard)
   @Get('secure')
+  @ApiOperation({ summary: 'Check if user is authenticated' })
+  @ApiResponse({ status: 200, description: 'Authenticated user info returned' })
   getSecure(@Request() req) {
     return {
       message: 'You are authenticated',
-      user: req.user, // dane z `JwtStrategy.validate`
+      user: req.user,
     };
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('user-lessons')
+  @ApiOperation({ summary: 'Get lessons owned by the authenticated user' })
+  @ApiResponse({ status: 200, description: 'Returns user lessons' })
   async getUserLessons(@Request() req) {
     return this.bartersService.getLessonsForUser(Number(req.user.id));
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('propose-lessons')
+  @ApiOperation({ summary: 'Propose a barter for a lesson' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        lessonId: { type: 'string', example: '1' },
+        offeredLessonId: { type: 'string', example: '2' },
+        message: { type: 'string', example: 'Would you like to trade?' },
+      },
+    },
+  })
+  @ApiResponse({ status: 201, description: 'Barter proposal created' })
   async proposeBarter(
     @Request() req,
     @Body()
@@ -49,18 +75,32 @@ export class BartersController {
 
   @UseGuards(JwtAuthGuard)
   @Get('sent')
+  @ApiOperation({ summary: 'Get barters sent by user' })
+  @ApiResponse({ status: 200, description: 'List of sent barters' })
   getSentBarters(@Request() req) {
     return this.bartersService.getBartersSentByUser(req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('incoming')
+  @ApiOperation({ summary: 'Get barters received for your lessons' })
+  @ApiResponse({ status: 200, description: 'List of received barters' })
   getReceivedBarters(@Request() req) {
     return this.bartersService.getBartersForUserLessons(req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post(':id/accept')
+  @ApiOperation({ summary: 'Accept a barter request' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'number', example: 5 },
+      },
+    },
+  })
+  @ApiResponse({ status: 200, description: 'Barter accepted' })
   acceptBarter(@Request() req, @Body() body: { id: number }) {
     return this.bartersService.updateBarterStatus(
       body.id,
@@ -71,6 +111,16 @@ export class BartersController {
 
   @UseGuards(JwtAuthGuard)
   @Post(':id/reject')
+  @ApiOperation({ summary: 'Reject a barter request' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'number', example: 5 },
+      },
+    },
+  })
+  @ApiResponse({ status: 200, description: 'Barter rejected' })
   rejectBarter(@Request() req, @Body() body: { id: number }) {
     return this.bartersService.updateBarterStatus(
       body.id,
@@ -79,3 +129,4 @@ export class BartersController {
     );
   }
 }
+
