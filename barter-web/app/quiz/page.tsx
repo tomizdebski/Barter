@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import Link from 'next/link';
-import { useQuiz } from '@/contexts/QuizContext';
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { useQuiz } from "@/contexts/QuizContext";
 
 type Category = { id: number; name: string };
 type Position = { x: number; y: number };
@@ -50,12 +50,14 @@ export default function QuizCategorySelector() {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`);
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/categories`
+        );
         const data = await res.json();
         setCategories(data);
         setPositions(generatePositions(data.length));
       } catch (error) {
-        console.error('Failed to fetch categories', error);
+        console.error("Failed to fetch categories", error);
       }
     }
 
@@ -67,7 +69,7 @@ export default function QuizCategorySelector() {
     if (animationDone && selectedIndex !== null && categories[selectedIndex]) {
       const topic = categories[selectedIndex].name;
       setCategory(topic); // zapisz kategorię w kontekście
-      router.push('/quiz/start'); // bez query stringów!
+      router.push("/quiz/start"); // bez query stringów!
     }
   }, [animationDone, selectedIndex, categories, router, setCategory]);
 
@@ -112,7 +114,12 @@ export default function QuizCategorySelector() {
                     }
                   : { scale: 1, opacity: 1 }
               }
-              transition={{ duration: 1.2, ease: 'easeInOut' }}
+              whileHover={
+                selectedIndex === null
+                  ? { scale: 1.2 } // tylko jeśli nie kliknięto
+                  : {}
+              }
+              transition={{ duration: 0.3, ease: "easeInOut" }}
               onAnimationComplete={() => {
                 if (selectedIndex === index) {
                   setAnimationDone(true);
@@ -130,11 +137,3 @@ export default function QuizCategorySelector() {
     </div>
   );
 }
-
-
-
-
-
-
-
-

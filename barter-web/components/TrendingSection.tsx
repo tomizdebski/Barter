@@ -9,6 +9,7 @@ type Lesson = {
   content: string;
   photo?: string | null;
   video?: string | null;
+  createdAt: string; // <-- dodane
   category: {
     name: string;
   };
@@ -21,6 +22,8 @@ type Lesson = {
 export default function TrendingSection() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
 
   useEffect(() => {
     const fetchLessons = async () => {
@@ -29,7 +32,6 @@ export default function TrendingSection() {
           credentials: "include",
         });
         const data = await res.json();
-        console.log("Fetched lessons:", data);
         setLessons(data);
       } catch (err) {
         console.error("Failed to fetch lessons", err);
@@ -52,6 +54,21 @@ export default function TrendingSection() {
     fetchCategories();
   }, []);
 
+  const toggleCategory = (cat: string) => {
+    setSelectedCategories((prev) =>
+      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
+    );
+  };
+
+  const filteredLessons = (selectedCategories.length
+    ? lessons.filter((lesson) => selectedCategories.includes(lesson.category.name))
+    : lessons
+  ).sort((a, b) => {
+    const dateA = new Date(a.createdAt).getTime();
+    const dateB = new Date(b.createdAt).getTime();
+    return sortOrder === "newest" ? dateB - dateA : dateA - dateB;
+  });
+
   return (
     <section className="bg-[#f9f9f9] py-16 px-4 sm:px-6 lg:px-12">
       <div className="max-w-7xl mx-auto">
@@ -59,19 +76,52 @@ export default function TrendingSection() {
 
         {/* Categories */}
         <div className="flex gap-2 mt-6 flex-wrap">
-          {categories.map((cat, i) => (
-            <button
-              key={i}
-              className="px-4 py-1 border border-[#00262b] text-sm rounded-full hover:bg-[#00262b] text-[#00262b] hover:text-white transition bg-[#E1DDD0]"
-            >
-              {cat}
-            </button>
-          ))}
+          {categories.map((cat, i) => {
+            const isSelected = selectedCategories.includes(cat);
+            return (
+              <button
+                key={i}
+                onClick={() => toggleCategory(cat)}
+                className={`px-4 py-1 border text-sm rounded-full transition ${
+                  isSelected
+                    ? "bg-[#00262b] text-white"
+                    : "bg-[#E1DDD0] text-[#00262b] hover:bg-[#00262b] hover:text-white"
+                }`}
+              >
+                {cat}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Sortowanie */}
+        <div className="mt-6 flex gap-4 items-center flex-wrap">
+          <span className="text-sm font-medium text-[#00262b]">Sortuj:</span>
+          <button
+            onClick={() => setSortOrder("newest")}
+            className={`text-sm px-3 py-1 border rounded-full transition ${
+              sortOrder === "newest"
+                ? "bg-[#00262b] text-white"
+                : "bg-[#E1DDD0] text-[#00262b] hover:bg-[#00262b] hover:text-white"
+            }`}
+          >
+            Od najnowszych
+          </button>
+          <button
+            onClick={() => setSortOrder("oldest")}
+            className={`text-sm px-3 py-1 border rounded-full transition ${
+              sortOrder === "oldest"
+                ? "bg-[#00262b] text-white"
+                : "bg-[#E1DDD0] text-[#00262b] hover:bg-[#00262b] hover:text-white"
+            }`}
+          >
+            Od najstarszych
+          </button>
         </div>
 
         {/* Cards */}
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {lessons.map((lesson) => (
+          {filteredLessons.map((lesson) => (
             <LessonCard
               key={lesson.id}
               id={lesson.id}
@@ -98,3 +148,5 @@ export default function TrendingSection() {
     </section>
   );
 }
+
+
