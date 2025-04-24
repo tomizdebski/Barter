@@ -13,24 +13,34 @@ import { SignUpDto } from './dto/signup.dto';
 import { SigninDto } from './dto/signin.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  // @Post('signup')
-  // async signup(@Body() dto: AuthDto) {
-  //   return this.authService.signup(dto);
-  // }
-
   @Post('signup')
+  @ApiOperation({ summary: 'Register a new user' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Sign up with optional avatar upload',
+    type: SignUpDto,
+  })
+  @ApiResponse({ status: 201, description: 'User successfully registered' })
   @UseInterceptors(
     FileInterceptor('avatar', {
       storage: diskStorage({
-        destination: './uploads', // Miejsce na serwerze, gdzie plik będzie przechowywany
+        destination: './uploads',
         filename: (req, file, cb) => {
           const filename = `${Date.now()}-${file.originalname}`;
-          cb(null, filename); // Zapisz plik z unikalną nazwą
+          cb(null, filename);
         },
       }),
     }),
@@ -39,12 +49,11 @@ export class AuthController {
     @Body() dto: SignUpDto,
     @UploadedFile() avatar: Express.Multer.File,
   ) {
-    // Jeśli avatar jest przesyłany, dodajemy jego ścieżkę do DTO
     const avatarPath = avatar ? `uploads/${avatar.filename}` : null;
 
     const newUser = await this.authService.signup({
       ...dto,
-      avatar: avatarPath, // Zapisujemy ścieżkę do awatara w bazie danych
+      avatar: avatarPath,
     });
 
     return {
@@ -54,33 +63,26 @@ export class AuthController {
   }
 
   @Post('signin')
+  @ApiOperation({ summary: 'Sign in with email and password' })
+  @ApiBody({ type: SigninDto })
+  @ApiResponse({ status: 200, description: 'User successfully signed in' })
   async signin(@Body() dto: SigninDto, @Req() req, @Res() res) {
     return this.authService.signin(dto, req, res);
   }
 
   @Get('signout')
+  @ApiOperation({ summary: 'Sign out the user' })
+  @ApiResponse({ status: 200, description: 'User signed out' })
   async signout(@Req() req, @Res() res) {
     return this.authService.signout(req, res);
   }
 
   @Get('me')
+  @ApiOperation({ summary: 'Get the current authenticated user' })
+  @ApiResponse({ status: 200, description: 'Authenticated user data' })
   async me(@Req() req) {
     return this.authService.me(req);
   }
 
-  @Post('/upload')
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: './uploads',
-        filename: (req, file, cb) => {
-          cb(null, `${file.originalname}`);
-        },
-      }),
-    }),
-  )
-  async uploadFile(@UploadedFile() file: any) {
-    console.log(file);
-    return 'success';
-  }
+  
 }
