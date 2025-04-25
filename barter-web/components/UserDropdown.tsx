@@ -43,7 +43,10 @@ const UserDropdown: React.FC = () => {
           height={36}
           className="min-w-9 min-h-9 rounded-full object-cover"
         />
-        <ChevronDown size={18} className={`${open ? "rotate-180" : ""} transition`} />
+        <ChevronDown
+          size={18}
+          className={`${open ? "rotate-180" : ""} transition`}
+        />
       </button>
 
       {/* MOBILE DROPDOWN – pełnoekranowy */}
@@ -71,16 +74,27 @@ const UserDropdown: React.FC = () => {
           </div>
 
           <div className="text-sm text-[#00262b]">
-            <div className="uppercase text-xs text-gray-500 mb-2">Switch Dashboard</div>
+            <div className="uppercase text-xs text-gray-500 mb-2">
+              Switch Dashboard
+            </div>
             <button className="w-full text-left px-4 py-2 hover:bg-[#00262b] hover:text-white rounded">
               Personal
             </button>
             <button className="w-full text-left px-4 py-2 flex items-center justify-between hover:bg-gray-100 rounded">
-              Career <span className="bg-yellow-300 text-xs px-2 py-0.5 rounded">New</span>
+              Career{" "}
+              <span className="bg-yellow-300 text-xs px-2 py-0.5 rounded">
+                New
+              </span>
             </button>
-            <button className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded">Profile</button>
-            <button className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded">Account</button>
-            <button className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded">Order History</button>
+            <button className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded">
+              Profile
+            </button>
+            <button className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded">
+              Account
+            </button>
+            <button className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded">
+              Order History
+            </button>
           </div>
 
           <button
@@ -112,15 +126,36 @@ const UserDropdown: React.FC = () => {
           </div>
 
           <div className="text-sm text-[#00262b]">
-            
-            
-            <button className="w-full text-left px-4 py-2 flex items-center justify-between hover:bg-gray-100">
+            <Link
+              href="/dashboard"
+              className="w-full text-left px-4 py-2 hover:bg-gray-100 block"
+            >
               Dashboard
-            </button>
-            <Link href="/profile" className="w-full text-left px-4 py-2 hover:bg-gray-100 block">Profile</Link>
-            <Link href="/account" className="w-full text-left px-4 py-2 hover:bg-gray-100 block">Account</Link>
-            <Link href="/lessons/create" className="w-full text-left px-4 py-2 hover:bg-gray-100 block">Add lesson</Link>
-            <Link href="/my-basket" className="w-full text-left px-4 py-2 hover:bg-gray-100 block">My basket</Link>
+            </Link>
+            <Link
+              href="/profile"
+              className="w-full text-left px-4 py-2 hover:bg-gray-100 block"
+            >
+              Profile
+            </Link>
+            <Link
+              href="/account"
+              className="w-full text-left px-4 py-2 hover:bg-gray-100 block"
+            >
+              Account
+            </Link>
+            <Link
+              href="/lessons/create"
+              className="w-full text-left px-4 py-2 hover:bg-gray-100 block"
+            >
+              Add lesson
+            </Link>
+            <Link
+              href="/my-basket"
+              className="w-full text-left px-4 py-2 hover:bg-gray-100 block"
+            >
+              My basket
+            </Link>
           </div>
 
           <button
