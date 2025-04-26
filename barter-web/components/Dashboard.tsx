@@ -67,14 +67,14 @@ export default function Dashboard() {
   }, [user?.id]);
 
   return (
-    <section className="p-6 lg:p-10 bg-[#e3e2e2] min-h-screen">
+    <section className="p-6 lg:p-10 bg-[#00262b] min-h-screen">
       <div className="max-w-7xl mx-auto space-y-10">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-[#00262b]">
+          <h1 className="text-3xl font-bold text-white">
             Welcome back, {user?.firstName}! 👋
           </h1>
-          <p className="text-gray-600 mt-2">Here's what's happening on your account.</p>
+          <p className="text-gray-100 mt-2">Here's what's happening on your account.</p>
         </div>
 
         {/* Quick actions */}
@@ -82,7 +82,7 @@ export default function Dashboard() {
           {/* My Lessons (tylko przycisk) */}
           <div
             onClick={() => setShowLessons(!showLessons)}
-            className="bg-white rounded-xl border p-5 hover:shadow-md transition text-[#00262b] cursor-pointer"
+            className="bg-white rounded-xl  p-5 hover:shadow-md hover:opacity-90 shadow-white transition text-[#00262b] cursor-pointer"
           >
             <div className="flex items-center justify-between w-full">
               <div>
@@ -107,13 +107,13 @@ export default function Dashboard() {
           <DashboardCard
             title="Settings"
             description="Manage your profile & account"
-            link="/dashboard/settings"
+            link="/settings"
           />
         </div>
 
         {/* Rozwijany panel z lekcjami */}
         {showLessons && (
-          <div className="mt-6 bg-white rounded-xl border p-6 shadow-md text-[#00262b] transition-all">
+          <div className="mt-6 bg-white rounded-xl p-6 shadow-md text-[#00262b] transition-all">
             {loadingLessons ? (
               <p className="text-gray-500 text-sm">Loading lessons...</p>
             ) : lessons.length === 0 ? (
@@ -156,7 +156,7 @@ export default function Dashboard() {
               {activities.map((activity, index) => (
                 <li
                   key={index}
-                  className="bg-white shadow-sm rounded-xl p-4 border flex justify-between items-center text-[#00262b]"
+                  className="bg-white/80 shadow-sm rounded-xl p-4  flex justify-between items-center text-[#00262b]"
                 >
                   <div className="flex items-center gap-2">
                     {getActivityIcon(activity.type)}
@@ -187,7 +187,7 @@ function DashboardCard({
   return (
     <Link
       href={link}
-      className="block bg-white rounded-xl border p-5 hover:shadow-md transition text-[#00262b]"
+      className="block bg-white rounded-xl  p-5 hover:shadow-md hover:opacity-90 shadow-white transition text-[#00262b]"
     >
       <h3 className="text-lg font-semibold text-[#00262b]">{title}</h3>
       <p className="text-sm text-gray-600 mt-1">{description}</p>
