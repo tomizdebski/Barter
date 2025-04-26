@@ -3,7 +3,18 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useUser } from "@/contexts/UserContext";
-import { BookOpenCheck, Repeat, UserCog, FileText, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  BookOpenCheck,
+  Repeat,
+  UserCog,
+  FileText,
+  ChevronDown,
+  ChevronUp,
+  Repeat2,
+  Book,
+  BookOpen,
+} from "lucide-react";
+import getStatusColor from "@/utils/getStatusColor";
 
 interface Activity {
   type: string;
@@ -16,20 +27,36 @@ interface Lesson {
   name: string;
 }
 
+interface Barter {
+  offeredLesson: any;
+  id: number;
+  lesson: {
+    id: number;
+    name: string;
+  };
+  status: "PENDING" | "ACCEPTED" | "REJECTED";
+}
+
 export default function Dashboard() {
   const { user } = useUser();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [lessons, setLessons] = useState<Lesson[]>([]);
+  const [barters, setBarters] = useState<Barter[]>([]);
   const [loadingActivities, setLoadingActivities] = useState(true);
   const [loadingLessons, setLoadingLessons] = useState(true);
+  const [loadingBarters, setLoadingBarters] = useState(true);
   const [showLessons, setShowLessons] = useState(false);
+  const [showBarters, setShowBarters] = useState(false);
 
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        const res = await fetch(`http://localhost:4000/users/${user?.id}/activities`, {
-          credentials: "include",
-        });
+        const res = await fetch(
+          `http://localhost:4000/users/${user?.id}/activities`,
+          {
+            credentials: "include",
+          }
+        );
         if (!res.ok) throw new Error("Failed to fetch activities");
         const data = await res.json();
         setActivities(data);
@@ -66,6 +93,27 @@ export default function Dashboard() {
     }
   }, [user?.id]);
 
+  useEffect(() => {
+    const fetchBarters = async () => {
+      try {
+        const res = await fetch(`http://localhost:4000/barters/sent`, {
+          credentials: "include",
+        });
+        if (!res.ok) throw new Error("Failed to fetch barters");
+        const data = await res.json();
+        setBarters(data);
+      } catch (error) {
+        console.error("Error fetching barters:", error);
+      } finally {
+        setLoadingBarters(false);
+      }
+    };
+
+    if (user?.id) {
+      fetchBarters();
+    }
+  }, [user?.id]);
+
   return (
     <section className="p-6 lg:p-10 bg-[#00262b] min-h-screen">
       <div className="max-w-7xl mx-auto space-y-10">
@@ -74,35 +122,58 @@ export default function Dashboard() {
           <h1 className="text-3xl font-bold text-white">
             Welcome back, {user?.firstName}! 👋
           </h1>
-          <p className="text-gray-100 mt-2">Here's what's happening on your account.</p>
+          <p className="text-gray-100 mt-2">
+            Here's what's happening on your account.
+          </p>
         </div>
 
         {/* Quick actions */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* My Lessons (tylko przycisk) */}
+          {/* My Lessons button */}
           <div
             onClick={() => setShowLessons(!showLessons)}
-            className="bg-white rounded-xl  p-5 hover:shadow-md hover:opacity-90 shadow-white transition text-[#00262b] cursor-pointer"
+            className="bg-white rounded-xl p-5 hover:shadow-md hover:opacity-90 transition text-[#00262b] cursor-pointer"
           >
             <div className="flex items-center justify-between w-full">
               <div>
-                <h3 className="text-lg font-semibold text-[#00262b]">My Lessons</h3>
-                <p className="text-sm text-gray-600 mt-1">View and manage your lessons</p>
+                <h3 className="text-lg font-semibold">My Lessons</h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  View and manage your lessons
+                </p>
               </div>
-              {showLessons ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+              {showLessons ? (
+                <ChevronUp size={20} />
+              ) : (
+                <ChevronDown size={20} />
+              )}
             </div>
           </div>
 
-          {/* Pozostałe karty */}
+          {/* My Barters button */}
+          <div
+            onClick={() => setShowBarters(!showBarters)}
+            className="bg-white rounded-xl p-5 hover:shadow-md hover:opacity-90 transition text-[#00262b] cursor-pointer"
+          >
+            <div className="flex items-center justify-between w-full">
+              <div>
+                <h3 className="text-lg font-semibold">My Barters</h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  Check your barter exchanges
+                </p>
+              </div>
+              {showBarters ? (
+                <ChevronUp size={20} />
+              ) : (
+                <ChevronDown size={20} />
+              )}
+            </div>
+          </div>
+
+          {/* Add Lesson and Settings */}
           <DashboardCard
             title="Add Lesson"
             description="Create a new barter lesson"
             link="/lessons/create"
-          />
-          <DashboardCard
-            title="My Barters"
-            description="Check your barter exchanges"
-            link="/barters"
           />
           <DashboardCard
             title="Settings"
@@ -111,7 +182,7 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* Rozwijany panel z lekcjami */}
+        {/* My Lessons Panel */}
         {showLessons && (
           <div className="mt-6 bg-white rounded-xl p-6 shadow-md text-[#00262b] transition-all">
             {loadingLessons ? (
@@ -124,39 +195,79 @@ export default function Dashboard() {
                   <li key={lesson.id}>
                     <Link
                       href={`/lessons/${lesson.id}`}
-                      className="flex items-center gap-2 text-sm text-[#00262b] hover:underline"
+                      className="flex items-center gap-2 text-sm hover:underline"
                     >
-                      📚 {lesson.name}
+                      <BookOpen size={18} className="text-[#00262b]" />
+                      {lesson.name}
                     </Link>
                   </li>
                 ))}
               </ul>
             )}
-            <div className="mt-4 text-right">
-              <Link
-                href="/lessons/my"
-                className="text-sm text-[#00262b] underline hover:text-blue-600"
-              >
-                View all lessons ➔
-              </Link>
-            </div>
+          </div>
+        )}
+
+        {/* My Barters Panel */}
+        {showBarters && (
+          <div className="mt-6 bg-white rounded-xl p-6 shadow-md text-[#00262b] transition-all">
+            {loadingBarters ? (
+              <p className="text-gray-500 text-sm">Loading barters...</p>
+            ) : barters.length === 0 ? (
+              <p className="text-gray-500 text-sm">
+                You have not proposed any barter yet.
+              </p>
+            ) : (
+              <ul className="space-y-4">
+                {barters.map((barter) => (
+                  <li
+                    key={barter.id}
+                    className="flex items-start gap-2 text-sm"
+                  >
+                    <Repeat2 size={20} className="text-[#00262b]" />
+                    <div>
+                      <p>
+                        You offered{" "}
+                        <Link
+                          href={`/lessons/${barter.offeredLesson.id}`}
+                          className="font-semibold underline text-[#00262b] hover:text-blue-600"
+                        >
+                          {barter.offeredLesson.name}
+                        </Link>{" "}
+                        for{" "}
+                        <Link
+                          href={`/lessons/${barter.lesson.id}`}
+                          className="font-semibold underline text-[#00262b] hover:text-blue-600"
+                        >
+                          {barter.lesson.name}
+                        </Link>{" "}
+                        <span className={getStatusColor(barter.status)}>
+                          ({barter.status})
+                        </span>
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         )}
 
         {/* Recent Activity */}
         <div>
-          <h2 className="text-2xl font-semibold text-[#00262b] mb-4">Recent Activity</h2>
+          <h2 className="text-2xl font-semibold text-white mb-4">
+            Recent Activity
+          </h2>
 
           {loadingActivities ? (
             <p>Loading activities...</p>
           ) : activities.length === 0 ? (
-            <p className="text-gray-500">No recent activities yet.</p>
+            <p className="text-gray-400">No recent activities yet.</p>
           ) : (
             <ul className="space-y-4">
               {activities.map((activity, index) => (
                 <li
                   key={index}
-                  className="bg-white/80 shadow-sm rounded-xl p-4  flex justify-between items-center text-[#00262b]"
+                  className="bg-white/80 shadow-sm rounded-xl p-4 flex justify-between items-center text-[#00262b]"
                 >
                   <div className="flex items-center gap-2">
                     {getActivityIcon(activity.type)}
@@ -187,9 +298,9 @@ function DashboardCard({
   return (
     <Link
       href={link}
-      className="block bg-white rounded-xl  p-5 hover:shadow-md hover:opacity-90 shadow-white transition text-[#00262b]"
+      className="block bg-white rounded-xl p-5 hover:shadow-md hover:opacity-90 transition text-[#00262b]"
     >
-      <h3 className="text-lg font-semibold text-[#00262b]">{title}</h3>
+      <h3 className="text-lg font-semibold">{title}</h3>
       <p className="text-sm text-gray-600 mt-1">{description}</p>
     </Link>
   );

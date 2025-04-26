@@ -114,7 +114,7 @@ export class UsersService {
     if (!Number.isInteger(userId) || userId <= 0) {
       throw new BadRequestException('Invalid user ID');
     }
-
+  
     try {
       const lessons = await this.prismaService.lessons.findMany({
         where: { instructorId: userId },
@@ -123,8 +123,8 @@ export class UsersService {
           createdAt: true,
         },
       });
-
-      const barters = await this.prismaService.barters.findMany({
+  
+      const acceptedBarters = await this.prismaService.barters.findMany({
         where: {
           OR: [
             { lesson: { instructorId: userId } },
@@ -139,26 +139,44 @@ export class UsersService {
           offeredLesson: { select: { name: true } },
         },
       });
-
+  
+      const proposedBarters = await this.prismaService.barters.findMany({
+        where: {
+          proposerId: userId, // te które użytkownik wysłał
+          status: 'PENDING',
+        },
+        select: {
+          id: true,
+          createdAt: true,
+          lesson: { select: { name: true } },
+          offeredLesson: { select: { name: true } },
+        },
+      });
+  
       const user = await this.prismaService.users.findUnique({
         where: { id: userId },
         select: { updatedAt: true },
       });
-
+  
       if (!user) {
         throw new NotFoundException(`User with ID ${userId} not found`);
       }
-
+  
       const activities = [
         ...lessons.map((lesson) => ({
           type: 'LESSON_CREATED',
           description: `You published a new lesson: "${lesson.name}"`,
           date: lesson.createdAt,
         })),
-        ...barters.map((barter) => ({
+        ...acceptedBarters.map((barter) => ({
           type: 'BARTER_ACCEPTED',
           description: `You exchanged "${barter.offeredLesson.name}" for "${barter.lesson.name}"`,
           date: barter.updatedAt,
+        })),
+        ...proposedBarters.map((barter) => ({
+          type: 'BARTER_PROPOSED',
+          description: `You proposed exchanging "${barter.offeredLesson.name}" for "${barter.lesson.name}"`,
+          date: barter.createdAt,
         })),
         {
           type: 'PROFILE_UPDATED',
@@ -166,15 +184,16 @@ export class UsersService {
           date: user.updatedAt ?? new Date(),
         },
       ];
-
+  
       activities.sort((a, b) => b.date.getTime() - a.date.getTime());
-
+  
       return activities;
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException('Failed to fetch user activities');
     }
   }
+  
 
   // Prywatna funkcja do walidacji emaila
   private isValidEmail(email: string): boolean {
