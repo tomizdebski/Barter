@@ -9,6 +9,8 @@ import {
   Param,
   Patch,
   Delete,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -25,6 +27,7 @@ import {
   ApiQuery,
   ApiParam,
 } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @ApiTags('Lessons')
 @Controller('lessons')
@@ -36,6 +39,16 @@ export class LessonsController {
   @ApiResponse({ status: 200, description: 'List of all lessons' })
   async findAll() {
     return this.lessonsService.findAll();
+  }
+
+  @Get('my')
+  @ApiOperation({ summary: 'Get lessons created by the current user' })
+  @ApiResponse({ status: 200, description: "List of user's lessons" })
+  @UseGuards(JwtAuthGuard) // 🔥 jeśli masz auth (np. JWT Guard)
+  async getMyLessons(@Req() req: any) {
+    console.log(req.user);
+    const userId = req.user.id; // lub req.user.id zależnie jak masz JWT
+    return this.lessonsService.findByInstructor(userId);
   }
 
   @Get('search')
@@ -60,7 +73,9 @@ export class LessonsController {
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create a new lesson with optional photo and video' })
+  @ApiOperation({
+    summary: 'Create a new lesson with optional photo and video',
+  })
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: CreateLessonDto }) // Swagger wymaga DTO jako typ
   @ApiResponse({ status: 201, description: 'Lesson created successfully' })
@@ -114,8 +129,3 @@ export class LessonsController {
     return this.lessonsService.delete(id);
   }
 }
-
-
-
-  
-  

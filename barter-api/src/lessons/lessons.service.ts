@@ -52,6 +52,22 @@ export class LessonsService {
     return lesson;
   }
 
+  async findByInstructor(userId: number) {
+    return this.prisma.lessons.findMany({
+      where: {
+        instructorId: userId,
+      },
+      select: {
+        id: true,
+        name: true,
+        createdAt: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
   async create(
     dto: any,
     photo?: Express.Multer.File,
