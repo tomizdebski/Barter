@@ -9,6 +9,8 @@ import {
   Param,
   Patch,
   Query,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -20,6 +22,7 @@ import {
   ApiParam,
   ApiBody,
 } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard'; // <-- zakładam, że masz taki guard
 
 @ApiTags('Users')
 @Controller('users')
@@ -92,4 +95,21 @@ export class UsersController {
   async deleteUser(@Param('id') id: string) {
     return this.usersService.deleteUser(+id);
   }
+
+
+  @Get(':id/activities')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get recent activities for a user' })
+  @ApiParam({ name: 'id', description: 'User ID (number)' })
+  @ApiResponse({ status: 200, description: 'List of recent user activities' })
+  async getUserActivities(@Param('id') id: string) {
+    const numericId = parseInt(id, 10);
+
+    if (isNaN(numericId) || numericId <= 0) {
+      throw new BadRequestException('Invalid user ID');
+    }
+
+    return this.usersService.getRecentActivities(numericId);
+  }
 }
+
