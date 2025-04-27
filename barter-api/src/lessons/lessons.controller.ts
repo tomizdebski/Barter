@@ -46,7 +46,7 @@ export class LessonsController {
   @ApiResponse({ status: 200, description: "List of user's lessons" })
   @UseGuards(JwtAuthGuard) // 🔥 jeśli masz auth (np. JWT Guard)
   async getMyLessons(@Req() req: any) {
-    console.log(req.user);
+    
     const userId = req.user.id; // lub req.user.id zależnie jak masz JWT
     return this.lessonsService.findByInstructor(userId);
   }

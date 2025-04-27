@@ -133,10 +133,10 @@ const UserDropdown: React.FC = () => {
               Dashboard
             </Link>
             <Link
-              href="/profile"
+              href="/settings"
               className="w-full text-left px-4 py-2 hover:bg-gray-100 block"
             >
-              Profile
+              Settings
             </Link>
             <Link
               href="/account"

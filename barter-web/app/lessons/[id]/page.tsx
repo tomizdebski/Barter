@@ -5,6 +5,8 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import ImageVideoSwitcher from "@/components/ImageVideoCarousel";
 import AskQuestionModal from "./AskQuestionModal";
+import ProposeBarterModal from "./ProposeBarterModal";
+import LessonActions from "./LessonActions";
 
 export async function generateMetadata({
   params,
@@ -22,22 +24,27 @@ export async function generateMetadata({
 
 async function getLesson(id: string) {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/lessons/${id}`, {
-      cache: "no-store",
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/lessons/${id}`,
+      {
+        cache: "no-store",
+      }
+    );
 
     if (!res.ok) return null;
-    return await res.json(); 
+    return await res.json();
   } catch (err) {
     console.error("Error fetching lesson:", err);
     return null;
   }
 }
 
-export default async function LessonDetailPage({ params }: {
+export default async function LessonDetailPage({
+  params,
+}: {
   params: { id: string };
 }) {
-  const param = await  params;
+  const param = await params;
   const lesson = await getLesson(param.id);
   if (!lesson) return notFound();
 
@@ -94,15 +101,7 @@ export default async function LessonDetailPage({ params }: {
             <p className="text-sm">{lesson.localization ?? "Online"}</p>
           </div>
 
-          <div className="bg-white p-6 rounded-md shadow-sm flex flex-col gap-3">
-            <button className="bg-[#00262b] text-white px-6 py-2 rounded-md hover:bg-[#00404d] transition">
-              Propose barter
-            </button>
-            <AskQuestionModal
-              lessonId={lesson.id}
-              instructorEmail={lesson.instructor.email}
-            />
-          </div>
+          <LessonActions lesson={lesson} />
         </div>
       </div>
     </div>

@@ -3,7 +3,7 @@
 import { useUser, User } from "@/contexts/UserContext";
 import Image from "next/image";
 
-export default function ProfilePage() {
+export default function SettingsPage() {
   const { user } = useUser();
 
   if (!user) {

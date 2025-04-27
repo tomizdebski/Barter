@@ -66,16 +66,22 @@ export class BartersService {
     const barter = await this.prisma.barters.findUnique({
       where: { id },
       include: {
-        lesson: true,
+        lesson: {
+          select: {
+            id: true,
+            instructorId: true,
+            studentId: true,
+          },
+        },
       },
     });
-
-    if (!barter) throw new NotFoundException('Barter not found');
-
-    if (barter.lesson.instructorId !== userId) {
-      throw new ForbiddenException('You are not allowed to update this barter');
+  
+    if (!barter) {
+      throw new NotFoundException('Barter not found');
     }
-
+  
+  
+    
     return this.prisma.barters.update({
       where: { id },
       data: {
@@ -83,4 +89,7 @@ export class BartersService {
       },
     });
   }
+  
+  
+  
 }
