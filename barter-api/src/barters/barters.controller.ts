@@ -5,20 +5,20 @@ import {
   Get,
   UseGuards,
   Request,
-} from '@nestjs/common';
+  Param,
+} from '@nestjs/common'; // <-- dodajemy też Param!
 import { BartersService } from './barters.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 import {
   ApiBearerAuth,
-  ApiBody,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 
 @ApiTags('Barters')
-@ApiBearerAuth() // 🔐 Wymaga JWT w Swaggerze
+@ApiBearerAuth()
 @Controller('barters')
 export class BartersController {
   constructor(private readonly bartersService: BartersService) {}
@@ -45,16 +45,6 @@ export class BartersController {
   @UseGuards(JwtAuthGuard)
   @Post('propose-lessons')
   @ApiOperation({ summary: 'Propose a barter for a lesson' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        lessonId: { type: 'string', example: '1' },
-        offeredLessonId: { type: 'string', example: '2' },
-        message: { type: 'string', example: 'Would you like to trade?' },
-      },
-    },
-  })
   @ApiResponse({ status: 201, description: 'Barter proposal created' })
   async proposeBarter(
     @Request() req,
@@ -92,18 +82,10 @@ export class BartersController {
   @UseGuards(JwtAuthGuard)
   @Post(':id/accept')
   @ApiOperation({ summary: 'Accept a barter request' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'number', example: 5 },
-      },
-    },
-  })
   @ApiResponse({ status: 200, description: 'Barter accepted' })
-  acceptBarter(@Request() req, @Body() body: { id: number }) {
+  acceptBarter(@Request() req, @Param('id') id: string) {
     return this.bartersService.updateBarterStatus(
-      body.id,
+      Number(id),
       'ACCEPTED',
       req.user.id,
     );
@@ -112,21 +94,12 @@ export class BartersController {
   @UseGuards(JwtAuthGuard)
   @Post(':id/reject')
   @ApiOperation({ summary: 'Reject a barter request' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'number', example: 5 },
-      },
-    },
-  })
   @ApiResponse({ status: 200, description: 'Barter rejected' })
-  rejectBarter(@Request() req, @Body() body: { id: number }) {
+  rejectBarter(@Request() req, @Param('id') id: string) {
     return this.bartersService.updateBarterStatus(
-      body.id,
+      Number(id),
       'REJECTED',
       req.user.id,
     );
   }
 }
-
