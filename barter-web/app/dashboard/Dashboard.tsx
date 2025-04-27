@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -50,7 +50,9 @@ export default function Dashboard() {
   const [showBarters, setShowBarters] = useState(false);
 
   const [snackbarMessage, setSnackbarMessage] = useState<string | null>(null);
-  const [snackbarType, setSnackbarType] = useState<"success" | "error">("success");
+  const [snackbarType, setSnackbarType] = useState<"success" | "error">(
+    "success"
+  );
 
   useEffect(() => {
     if (!user) {
@@ -124,34 +126,63 @@ export default function Dashboard() {
 
   const handleAcceptBarter = async (barterId: number) => {
     try {
-      const res = await fetch(`http://localhost:4000/barters/${barterId}/accept`, {
-        method: "PATCH",
-        credentials: "include",
-      });
-
-      if (!res.ok) throw new Error("Failed to accept barter");
-
+      const res = await fetch(
+        `http://localhost:4000/barters/${barterId}/accept`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      if (!res.ok) {
+        const errorData = await res.json();
+  
+        if (res.status === 403) {
+          setSnackbarMessage("You cannot accept a barter that you offered.");
+        } else if (res.status === 404) {
+          setSnackbarMessage("Barter not found.");
+        } else {
+          setSnackbarMessage(errorData.message || "An unknown error occurred.");
+        }
+  
+        setSnackbarType("error");
+        return; // stop function execution
+      }
+  
+      // If OK, update state
       setBarters((prev) =>
         prev.map((barter) =>
           barter.id === barterId ? { ...barter, status: "ACCEPTED" } : barter
         )
       );
-
+  
       setSnackbarMessage("Barter accepted successfully!");
       setSnackbarType("success");
     } catch (error) {
-      console.error("Failed to accept barter:", error);
-      setSnackbarMessage("Failed to accept barter.");
+      // Handle general errors
+      setSnackbarMessage("Something went wrong.");
       setSnackbarType("error");
     }
   };
+  
+  
+  
 
   const handleRejectBarter = async (barterId: number) => {
     try {
-      const res = await fetch(`http://localhost:4000/barters/${barterId}/reject`, {
-        method: "PATCH",
-        credentials: "include",
-      });
+      const res = await fetch(
+        `http://localhost:4000/barters/${barterId}/reject`,
+        {
+          method: "POST", 
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!res.ok) throw new Error("Failed to reject barter");
 
@@ -164,7 +195,7 @@ export default function Dashboard() {
       setSnackbarMessage("Barter rejected successfully!");
       setSnackbarType("success");
     } catch (error) {
-      console.error("Failed to reject barter:", error);
+     
       setSnackbarMessage("Failed to reject barter.");
       setSnackbarType("error");
     }
@@ -240,7 +271,7 @@ export default function Dashboard() {
           <Panel loading={loadingBarters} empty={barters.length === 0}>
             <ul className="space-y-4">
               {barters.map((barter) => (
-                <li key={barter.id} className="flex items-start gap-2 text-sm">
+                <li key={barter.id} className="flex items-start gap-2 text-sm hover:bg-gray-100 hover:cursor-pointer">
                   <Repeat2 size={20} className="text-[#00262b]" />
                   <div>
                     <p>
@@ -315,9 +346,11 @@ export default function Dashboard() {
 
       {/* Snackbar */}
       {snackbarMessage && (
-        <div className={`fixed bottom-6 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-md shadow-lg z-50 transition ${
-          snackbarType === "success" ? "bg-green-600" : "bg-red-600"
-        } text-white`}>
+        <div
+          className={`fixed bottom-6 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-md shadow-lg z-50 transition ${
+            snackbarType === "success" ? "bg-green-600" : "bg-red-600"
+          } text-white`}
+        >
           {snackbarMessage}
         </div>
       )}
@@ -327,18 +360,42 @@ export default function Dashboard() {
 
 // Pomocnicze komponenty:
 
-function DashboardCard({ title, description, link }: { title: string; description: string; link: string; }) {
+function DashboardCard({
+  title,
+  description,
+  link,
+}: {
+  title: string;
+  description: string;
+  link: string;
+}) {
   return (
-    <Link href={link} className="block bg-white rounded-xl p-5 hover:shadow-md hover:opacity-90 transition text-[#00262b]">
+    <Link
+      href={link}
+      className="block bg-white rounded-xl p-5 hover:shadow-md hover:opacity-90 transition text-[#00262b]"
+    >
       <h3 className="text-lg font-semibold">{title}</h3>
       <p className="text-sm text-gray-600 mt-1">{description}</p>
     </Link>
   );
 }
 
-function DashboardToggleCard({ title, description, show, onToggle }: { title: string; description: string; show: boolean; onToggle: () => void; }) {
+function DashboardToggleCard({
+  title,
+  description,
+  show,
+  onToggle,
+}: {
+  title: string;
+  description: string;
+  show: boolean;
+  onToggle: () => void;
+}) {
   return (
-    <div onClick={onToggle} className="bg-white rounded-xl p-5 hover:shadow-md hover:opacity-90 transition text-[#00262b] cursor-pointer">
+    <div
+      onClick={onToggle}
+      className="bg-white rounded-xl p-5 hover:shadow-md hover:opacity-90 transition text-[#00262b] cursor-pointer"
+    >
       <div className="flex items-center justify-between w-full">
         <div>
           <h3 className="text-lg font-semibold">{title}</h3>
@@ -350,7 +407,15 @@ function DashboardToggleCard({ title, description, show, onToggle }: { title: st
   );
 }
 
-function Panel({ children, loading, empty }: { children: React.ReactNode; loading: boolean; empty: boolean; }) {
+function Panel({
+  children,
+  loading,
+  empty,
+}: {
+  children: React.ReactNode;
+  loading: boolean;
+  empty: boolean;
+}) {
   return (
     <div className="mt-6 bg-white rounded-xl p-6 shadow-md text-[#00262b] transition-all">
       {loading ? (
@@ -403,6 +468,3 @@ function formatTimeAgo(date: Date) {
   if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
   return `${Math.floor(diffDays / 30)} months ago`;
 }
-
-
-
