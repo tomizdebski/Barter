@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from "react";
 
@@ -17,6 +17,8 @@ export default function ProposeBarterModal({ lessonId }: ProposeBarterModalProps
   const [offeredLessonId, setOfferedLessonId] = useState<number | null>(null);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const [snackbarMessage, setSnackbarMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchLessons = async () => {
@@ -50,16 +52,23 @@ export default function ProposeBarterModal({ lessonId }: ProposeBarterModalProps
   
       if (!res.ok) throw new Error("Failed to propose barter");
   
-      alert("Barter proposed successfully!");
+      setSnackbarMessage("Barter proposed successfully!");
       setIsOpen(false);
     } catch (err) {
       console.error(err);
-      alert("Failed to propose barter");
+      setSnackbarMessage("Failed to propose barter.");
     } finally {
       setLoading(false);
     }
   };
-  
+
+  // Automatyczne ukrywanie snackbar po 3 sekundach
+  useEffect(() => {
+    if (snackbarMessage) {
+      const timer = setTimeout(() => setSnackbarMessage(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [snackbarMessage]);
 
   return (
     <>
@@ -130,6 +139,13 @@ export default function ProposeBarterModal({ lessonId }: ProposeBarterModalProps
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Snackbar */}
+      {snackbarMessage && (
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-md shadow-lg z-50 transition">
+          {snackbarMessage}
         </div>
       )}
     </>
