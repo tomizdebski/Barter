@@ -6,6 +6,7 @@ import type { Metadata } from "next";
 import ImageVideoSwitcher from "@/components/ImageVideoCarousel";
 import AskQuestionModal from "./AskQuestionModal";
 import ProposeBarterModal from "./ProposeBarterModal";
+import LessonActions from "./LessonActions";
 
 export async function generateMetadata({
   params,
@@ -100,13 +101,7 @@ export default async function LessonDetailPage({
             <p className="text-sm">{lesson.localization ?? "Online"}</p>
           </div>
 
-          <div className="bg-white p-6 rounded-md shadow-sm flex flex-col gap-3">
-            <ProposeBarterModal lessonId={lesson.id} />
-            <AskQuestionModal
-              lessonId={lesson.id}
-              instructorEmail={lesson.instructor.email}
-            />
-          </div>
+          <LessonActions lesson={lesson} />
         </div>
       </div>
     </div>

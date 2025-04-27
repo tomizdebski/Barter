@@ -6,6 +6,7 @@ import {
   Req,
   Res,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -20,6 +21,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -77,12 +79,9 @@ export class AuthController {
     return this.authService.signout(req, res);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get('me')
-  @ApiOperation({ summary: 'Get the current authenticated user' })
-  @ApiResponse({ status: 200, description: 'Authenticated user data' })
   async me(@Req() req) {
     return this.authService.me(req);
   }
-
-  
 }

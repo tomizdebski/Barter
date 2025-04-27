@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useUser } from "@/contexts/UserContext";
+import { useRouter } from "next/navigation";
+
+  
 import {
   BookOpenCheck,
   Repeat,
@@ -47,6 +50,15 @@ export default function Dashboard() {
   const [loadingBarters, setLoadingBarters] = useState(true);
   const [showLessons, setShowLessons] = useState(false);
   const [showBarters, setShowBarters] = useState(false);
+  const router = useRouter();
+  
+
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/auth/login");
+    }
+  }, [user, router]);
 
   useEffect(() => {
     const fetchActivities = async () => {
@@ -195,7 +207,7 @@ export default function Dashboard() {
                   <li key={lesson.id}>
                     <Link
                       href={`/lessons/${lesson.id}`}
-                      className="flex items-center gap-2 text-sm hover:underline"
+                      className="flex items-center gap-2 text-sm hover:bg-gray-100"
                     >
                       <BookOpen size={18} className="text-[#00262b]" />
                       {lesson.name}
