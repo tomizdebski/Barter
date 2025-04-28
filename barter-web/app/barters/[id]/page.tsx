@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import { User, BookOpen, MapPin, Video } from 'lucide-react'; // Ikony!
 
+// ⭐ Typy danych
 type Lesson = {
   id: number;
   name: string;
@@ -28,7 +30,7 @@ type Barter = {
   message?: string;
 };
 
-export default function BarterPage() { // <-- UWAGA! To jest default export
+export default function BarterPage() {
   const { id } = useParams();
   const [barter, setBarter] = useState<Barter | null>(null);
   const [loading, setLoading] = useState(true);
@@ -42,7 +44,7 @@ export default function BarterPage() { // <-- UWAGA! To jest default export
         });
 
         if (!res.ok) {
-          throw new Error('Błąd ładowania barteru');
+          throw new Error('Failed to load barter');
         }
 
         const data = await res.json();
@@ -59,45 +61,114 @@ export default function BarterPage() { // <-- UWAGA! To jest default export
     }
   }, [id]);
 
-  if (loading) return <div className="text-center p-8">Ładowanie...</div>;
-  if (error || !barter) return <div className="text-center p-8">Błąd ładowania barteru.</div>;
+  if (loading) return <div className="text-center p-8">Loading...</div>;
+  if (error || !barter) return <div className="text-center p-8">Error loading barter.</div>;
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-gradient-to-b from-[#00404d] to-[#0077b3] text-white relative overflow-hidden">
-      <div className="relative flex flex-col md:flex-row items-center justify-center gap-1 w-full max-w-7xl z-10">
-        <LessonCard lesson={barter.lesson} title="Lekcja do wymiany" up />
-        <LessonCard lesson={barter.offeredLesson} title="Twoja oferta" down />
+    <div className="flex min-h-screen flex-col">
+      {/* Pasek kolorów na górze */}
+      <div className="flex h-1 w-full">
+        <div className="basis-[10%] bg-[#7D0F0F]" />
+        <div className="basis-[35%] bg-[#C63224]" />
+        <div className="basis-[15%] bg-[#00262b]" />
+        <div className="basis-[40%] bg-[#00C3F5]" />
+      </div>
+
+      {/* Dwie połowy */}
+      <div className="flex flex-1 flex-col md:flex-row">
+        {/* Lewa część - ciemne tło */}
+        <div className="bg-[#00262b] w-full md:w-1/2 flex items-center justify-center p-8">
+          <LessonCard lesson={barter.lesson} title="Lesson to Exchange" isDarkSide />
+        </div>
+
+        {/* Prawa część - jasne tło */}
+        <div className="bg-white w-full md:w-1/2 flex items-center justify-center p-8">
+          <LessonCard lesson={barter.offeredLesson} title="Your Offer" />
+        </div>
       </div>
     </div>
   );
 }
 
-// 👇 To jest funkcja pomocnicza — NIE exportujemy jej osobno
-function LessonCard({ lesson, title, up, down }: { lesson: Lesson, title: string, up?: boolean, down?: boolean }) {
+function LessonCard({ lesson, title, isDarkSide }: { lesson: Lesson; title: string; isDarkSide?: boolean }) {
+  const cardBg = isDarkSide ? "bg-white text-black" : "bg-[#00262b] text-white";
+  const textColor = isDarkSide ? "text-[#00262b]" : "text-cyan-400";
+
   return (
-    <div className={`bg-white w-[500px] h-[650px] flex flex-col justify-start items-center shadow-2xl p-6 text-black ${up ? '-translate-y-8' : ''} ${down ? 'translate-y-8' : ''}`}>
+    <div
+      className={`w-full max-w-2xl min-h-[750px] flex flex-col items-center justify-start rounded-3xl shadow-lg overflow-hidden ${cardBg}
+                  transform transition-all duration-500 hover:scale-[1.02]`}
+    >
+      {/* FULL WIDTH PHOTO */}
       {lesson.photo && (
         <img
-          src={lesson.photo.startsWith('http') ? lesson.photo : `http://localhost:4000/uploads/${lesson.photo}`}
-          alt="Zdjęcie lekcji"
-          className="w-full h-40 object-cover rounded-md mb-4"
+          src={lesson.photo.startsWith('http') ? lesson.photo : `http://localhost:4000/${lesson.photo}`}
+          alt="Lesson photo"
+          className="w-full h-64 object-cover"
         />
       )}
 
-      <h2 className="text-3xl font-bold mb-2 text-center">{title}</h2>
-      <h3 className="text-2xl font-semibold text-center mb-2">{lesson.name}</h3>
+      {/* Card Content */}
+      <div className="p-8 flex flex-col items-center w-full">
+        <h2 className={`text-2xl font-bold mb-2 text-center ${textColor}`}>{title}</h2>
+        <h3 className="text-3xl font-semibold text-center mb-6">{lesson.name}</h3>
 
-      <p className="text-gray-600 text-center text-sm mb-4 px-4">{lesson.content}</p>
+        {/* Lesson description */}
+        <p className={`text-center text-base mb-6 px-6 ${isDarkSide ? "text-gray-700" : "text-gray-300"}`}>
+          {lesson.content}
+        </p>
 
-      <div className="flex flex-col gap-2 w-full text-sm mt-4">
-        <p><span className="font-semibold">Instruktor:</span> {lesson.instructor.firstName} {lesson.instructor.lastName}</p>
-        <p><span className="font-semibold">Kategoria:</span> {lesson.category.name}</p>
-        {lesson.localization && (
-          <p><span className="font-semibold">Lokalizacja:</span> {lesson.localization.name}</p>
-        )}
+        {/* Additional lesson information */}
+        <div className="flex flex-col gap-3 w-full text-sm">
+          <div className="flex items-center gap-2">
+            <User size={18} />
+            <p>
+              <span className="font-semibold">Instructor:</span> {lesson.instructor.firstName} {lesson.instructor.lastName}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <BookOpen size={18} />
+            <p>
+              <span className="font-semibold">Category:</span> {lesson.category.name}
+            </p>
+          </div>
+
+          {lesson.localization && (
+            <div className="flex items-center gap-2">
+              <MapPin size={18} />
+              <p>
+                <span className="font-semibold">Location:</span> {lesson.localization.name}
+              </p>
+            </div>
+          )}
+
+          {/* Video preview */}
+          {lesson.video && (
+            <div className="flex flex-col items-center mt-6 w-full">
+              <div className="relative w-full overflow-hidden rounded-2xl shadow-md">
+                <video
+                  controls
+                  className="w-full object-cover"
+                  src={lesson.video.startsWith('http') ? lesson.video : `http://localhost:4000/${lesson.video}`}
+                >
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-gray-400 mt-2">
+                <Video size={16} />
+                <span>Lesson preview video</span>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
 }
+
+
+
+
 
 

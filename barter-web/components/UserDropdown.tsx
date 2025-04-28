@@ -11,7 +11,6 @@ const UserDropdown: React.FC = () => {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Obsługa kliknięcia poza dropdownem
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -26,8 +25,6 @@ const UserDropdown: React.FC = () => {
   }, []);
 
   if (!user) return null;
-
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 800;
 
   return (
     <div className="relative text-[#00262b]" ref={dropdownRef}>
@@ -49,19 +46,26 @@ const UserDropdown: React.FC = () => {
         />
       </button>
 
-      {/* MOBILE DROPDOWN – pełnoekranowy */}
+      {/* Dropdown */}
       {open && (
-        <div className="min-[800px]:hidden fixed top-[64px] left-0 w-full bg-white z-50 shadow-md border-t flex flex-col p-4 gap-4">
-          <div className="flex items-center justify-between mb-2">
+        <div
+          className={`
+            absolute top-12 right-0 w-[92vw] max-w-[320px] bg-white rounded-2xl shadow-2xl ring-1 ring-black/5 p-4 z-50 flex flex-col gap-4
+            min-[800px]:absolute min-[800px]:right-0 min-[800px]:top-12
+            max-[799px]:fixed max-[799px]:top-[64px] max-[799px]:left-0 max-[799px]:right-0 max-[799px]:w-full max-[799px]:max-w-full max-[799px]:rounded-none
+          `}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Image
                 src={`http://localhost:4000/${user.avatarUrl}`}
                 alt="Avatar"
-                width={36}
-                height={36}
-                className="w-9 h-9 rounded-full object-cover"
+                width={40}
+                height={40}
+                className="w-10 h-10 rounded-full object-cover"
               />
-              <div>
+              <div className="flex flex-col">
                 <p className="font-bold text-sm">
                   {user.firstName} {user.lastName}
                 </p>
@@ -73,94 +77,29 @@ const UserDropdown: React.FC = () => {
             </button>
           </div>
 
-          <div className="text-sm text-[#00262b]">
-            <div className="uppercase text-xs text-gray-500 mb-2">
-              Switch Dashboard
-            </div>
-            <button className="w-full text-left px-4 py-2 hover:bg-[#00262b] hover:text-white rounded">
-              Personal
-            </button>
-            <button className="w-full text-left px-4 py-2 flex items-center justify-between hover:bg-gray-100 rounded">
-              Career{" "}
-              <span className="bg-yellow-300 text-xs px-2 py-0.5 rounded">
-                New
-              </span>
-            </button>
-            <button className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded">
-              Profile
-            </button>
-            <button className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded">
-              Account
-            </button>
-            <button className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded">
-              Order History
-            </button>
-          </div>
-
-          <button
-            onClick={logout}
-            className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 border-t mt-2"
-          >
-            Sign Out
-          </button>
-        </div>
-      )}
-
-      {/* DESKTOP DROPDOWN */}
-      {open && (
-        <div className="hidden min-[800px]:block absolute right-2 top-12 w-[92vw] max-w-[280px] sm:w-64 bg-white rounded-xl shadow-2xl ring-1 ring-black/5 z-50">
-          <div className="p-4 border-b flex items-center gap-3">
-            <Image
-              src={`http://localhost:4000/${user.avatarUrl}`}
-              alt="Avatar"
-              width={36}
-              height={36}
-              className="w-9 h-9 rounded-full object-cover"
-            />
-            <div className="flex flex-col">
-              <p className="font-bold text-sm leading-tight">
-                {user.firstName} {user.lastName}
-              </p>
-              <p className="text-xs text-gray-500 truncate">{user.email}</p>
-            </div>
-          </div>
-
-          <div className="text-sm text-[#00262b]">
-            <Link
-              href="/dashboard"
-              className="w-full text-left px-4 py-2 hover:bg-gray-100 block"
-            >
+          {/* Links */}
+          <div className="flex flex-col gap-2 text-sm text-[#00262b]">
+            <Link href="/dashboard" className="hover:bg-gray-100 rounded px-4 py-2">
               Dashboard
             </Link>
-            <Link
-              href="/settings"
-              className="w-full text-left px-4 py-2 hover:bg-gray-100 block"
-            >
+            <Link href="/settings" className="hover:bg-gray-100 rounded px-4 py-2">
               Settings
             </Link>
-            <Link
-              href="/account"
-              className="w-full text-left px-4 py-2 hover:bg-gray-100 block"
-            >
+            <Link href="/account" className="hover:bg-gray-100 rounded px-4 py-2">
               Account
             </Link>
-            <Link
-              href="/lessons/create"
-              className="w-full text-left px-4 py-2 hover:bg-gray-100 block"
-            >
-              Add lesson
+            <Link href="/lessons/create" className="hover:bg-gray-100 rounded px-4 py-2">
+              Add Lesson
             </Link>
-            <Link
-              href="/my-basket"
-              className="w-full text-left px-4 py-2 hover:bg-gray-100 block"
-            >
-              My basket
+            <Link href="/my-basket" className="hover:bg-gray-100 rounded px-4 py-2">
+              My Basket
             </Link>
           </div>
 
+          {/* Logout */}
           <button
             onClick={logout}
-            className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 border-t border-t-[#00262b]"
+            className="w-full text-left text-red-600 hover:bg-red-50 rounded px-4 py-2 border-t pt-3 border-gray-200 mt-2"
           >
             Sign Out
           </button>
@@ -171,3 +110,5 @@ const UserDropdown: React.FC = () => {
 };
 
 export default UserDropdown;
+
+

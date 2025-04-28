@@ -136,10 +136,10 @@ export default function Dashboard() {
           },
         }
       );
-  
+
       if (!res.ok) {
         const errorData = await res.json();
-  
+
         if (res.status === 403) {
           setSnackbarMessage("You cannot accept a barter that you offered.");
         } else if (res.status === 404) {
@@ -147,18 +147,18 @@ export default function Dashboard() {
         } else {
           setSnackbarMessage(errorData.message || "An unknown error occurred.");
         }
-  
+
         setSnackbarType("error");
         return; // stop function execution
       }
-  
+
       // If OK, update state
       setBarters((prev) =>
         prev.map((barter) =>
           barter.id === barterId ? { ...barter, status: "ACCEPTED" } : barter
         )
       );
-  
+
       setSnackbarMessage("Barter accepted successfully!");
       setSnackbarType("success");
     } catch (error) {
@@ -167,16 +167,13 @@ export default function Dashboard() {
       setSnackbarType("error");
     }
   };
-  
-  
-  
 
   const handleRejectBarter = async (barterId: number) => {
     try {
       const res = await fetch(
         `http://localhost:4000/barters/${barterId}/reject`,
         {
-          method: "POST", 
+          method: "POST",
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
@@ -195,7 +192,6 @@ export default function Dashboard() {
       setSnackbarMessage("Barter rejected successfully!");
       setSnackbarType("success");
     } catch (error) {
-     
       setSnackbarMessage("Failed to reject barter.");
       setSnackbarType("error");
     }
@@ -271,7 +267,11 @@ export default function Dashboard() {
           <Panel loading={loadingBarters} empty={barters.length === 0}>
             <ul className="space-y-4">
               {barters.map((barter) => (
-                <li key={barter.id} className="flex items-start gap-2 text-sm hover:bg-gray-100 hover:cursor-pointer">
+                <li
+                  key={barter.id}
+                  className="flex items-start gap-2 text-sm hover:bg-gray-100 hover:cursor-pointer"
+                  onClick={() => router.push(`/barters/${barter.id}`)}
+                >
                   <Repeat2 size={20} className="text-[#00262b]" />
                   <div>
                     <p>
