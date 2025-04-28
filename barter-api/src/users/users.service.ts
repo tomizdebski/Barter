@@ -12,7 +12,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  // Pobranie wszystkich użytkowników
+  
   async findAll() {
     try {
       return await this.prismaService.users.findMany();
@@ -21,49 +21,38 @@ export class UsersService {
     }
   }
 
-  // Pobranie użytkownika po emailu
+  
   async findByEmail(email: string) {
-    if (!this.isValidEmail(email)) {
-      throw new BadRequestException('Invalid email format');
+    if (!email.includes('@')) {
+      throw new BadRequestException('Invalid email');
     }
-
-    try {
-      const user = await this.prismaService.users.findUnique({
-        where: { email },
-      });
-
-      if (!user) {
-        throw new NotFoundException(`User with email ${email} not found`);
-      }
-
-      return user;
-    } catch (error) {
-      throw new BadRequestException('Failed to fetch user by email');
+  
+    const user = await this.prismaService.users.findUnique({ where: { email } });
+    
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
+  
+    return user;
   }
-
-  // Pobranie użytkownika po ID
+  
+ 
   async findById(id: number) {
-    if (!Number.isInteger(id) || id <= 0) {
-      throw new BadRequestException('Invalid user ID');
+    if (id <= 0) {
+      throw new BadRequestException('Invalid ID');
     }
-
-    try {
-      const user = await this.prismaService.users.findUnique({
-        where: { id },
-      });
-
-      if (!user) {
-        throw new NotFoundException(`User with ID ${id} not found`);
-      }
-
-      return user;
-    } catch (error) {
-      throw new BadRequestException('Failed to fetch user by ID');
+  
+    const user = await this.prismaService.users.findUnique({ where: { id } });
+  
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
+  
+    return user;
   }
+  
 
-  // Usunięcie użytkownika
+ 
   async deleteUser(id: number) {
     if (!Number.isInteger(id) || id <= 0) {
       throw new BadRequestException('Invalid user ID');
@@ -84,7 +73,7 @@ export class UsersService {
     }
   }
 
-  // Aktualizacja użytkownika
+
   async updateUser(id: number, updateUserDto: UpdateUserDto) {
     const existingUser = await this.prismaService.users.findUnique({
       where: { id },
@@ -195,7 +184,7 @@ export class UsersService {
   }
   
 
-  // Prywatna funkcja do walidacji emaila
+  
   private isValidEmail(email: string): boolean {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailRegex.test(email);
