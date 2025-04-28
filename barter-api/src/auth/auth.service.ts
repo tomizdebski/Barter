@@ -1,4 +1,4 @@
-import { PrismaService } from 'prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import {
   BadRequestException,
   ForbiddenException,
@@ -8,7 +8,7 @@ import { SignUpDto  } from './dto/signup.dto';
 import { SigninDto } from './dto/signin.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { jwtSecret } from 'src/utils/constans';
+import { jwtSecret } from '../utils/constans';
 import { Request, Response } from 'express';
 
 @Injectable()
