@@ -102,4 +102,18 @@ export class BartersController {
       req.user.id,
     );
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  @ApiOperation({ summary: 'Get details of a specific barter by ID' })
+  @ApiResponse({ status: 200, description: 'Returns barter details' })
+  async getBarterById(@Request() req, @Param('id') id: string) {
+    const barterId = Number(id);
+
+    // if (isNaN(barterId)) {
+    //   throw new BadRequestException('Invalid barter ID');
+    // }
+
+    return this.bartersService.getBarterById(barterId, req.user.id);
+  }
 }
