@@ -1,17 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
+import * as path from 'path';
 
 describe('Auth e2e', () => {
   let app: INestApplication;
+  let accessToken: string;
 
   beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
 
-    app = module.createNestApplication();
+    app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe({ whitelist: true })); // włącz validation pipe
     await app.init();
   });
 
@@ -19,27 +22,62 @@ describe('Auth e2e', () => {
     await app.close();
   });
 
-  it('/auth/signup (POST) - register new user', async () => {
+  it('/auth/signup (POST) - register new user WITHOUT avatar', async () => {
     const response = await request(app.getHttpServer())
       .post('/auth/signup')
-      .send({
-        email: 'testuser@example.com',
-        password: 'Test1234!',
-        firstName: 'Test',
-        lastName: 'User',
-      })
+      .field('email', 'testuser@example.com')
+      .field('password', 'Test1234!')
+      .field('firstName', 'Test')
+      .field('lastName', 'User')
       .expect(201);
 
     expect(response.body.user.email).toEqual('testuser@example.com');
+    expect(response.body.message).toBe('User successfully registered');
+  });
+
+  it('/auth/signup (POST) - register new user WITH avatar', async () => {
+    const avatarPath = path.join(__dirname, 'test-avatar.png'); // załaduj testowy plik
+
+    const response = await request(app.getHttpServer())
+      .post('/auth/signup')
+      .field('email', 'avataruser@example.com')
+      .field('password', 'Test1234!')
+      .field('firstName', 'Avatar')
+      .field('lastName', 'User')
+      .attach('avatar', avatarPath)
+      .expect(201);
+
+    expect(response.body.user.email).toEqual('avataruser@example.com');
+    expect(response.body.user.avatar).toContain('uploads/');
   });
 
   it('/auth/signin (POST) - login user', async () => {
-    await request(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .post('/auth/signin')
       .send({
         email: 'testuser@example.com',
         password: 'Test1234!',
       })
       .expect(200);
+
+    // zakładam, że signin zwraca token, sesję lub cookie
+    expect(response.body.accessToken).toBeDefined();
+    accessToken = response.body.accessToken;
+  });
+
+  it('/auth/me (GET) - get current user info', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/auth/me')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(200);
+
+    expect(response.body.email).toEqual('testuser@example.com');
+  });
+
+  it('/auth/signout (GET) - sign out user', async () => {
+    await request(app.getHttpServer())
+      .get('/auth/signout')
+      .expect(200);
   });
 });
+
