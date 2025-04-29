@@ -5,13 +5,11 @@ import { Request } from 'express';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-
   constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        (req: Request) => {
-          return req.cookies?.token;
-        },
+        (req: Request) => req.cookies?.token,
+        ExtractJwt.fromAuthHeaderAsBearerToken(), // <-- DODANE!
       ]),
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET,
@@ -32,3 +30,4 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     };
   }
 }
+

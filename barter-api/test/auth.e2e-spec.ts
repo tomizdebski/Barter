@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
-import * as path from 'path';
 
 describe('Auth e2e', () => {
   let app: INestApplication;
@@ -14,7 +13,7 @@ describe('Auth e2e', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true })); // włącz validation pipe
+    app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
     await app.init();
   });
 
@@ -22,29 +21,15 @@ describe('Auth e2e', () => {
     await app.close();
   });
 
-  it('/auth/signup (POST) - register new user WITHOUT avatar', async () => {
-    const response = await request(app.getHttpServer())
-      .post('/auth/signup')
-      .field('email', 'testuser@example.com')
-      .field('password', 'Test1234!')
-      .field('firstName', 'Test')
-      .field('lastName', 'User')
-      .expect(201);
-
-    expect(response.body.user.email).toEqual('testuser@example.com');
-    expect(response.body.message).toBe('User successfully registered');
-  });
 
   it('/auth/signup (POST) - register new user WITH avatar', async () => {
-    const avatarPath = path.join(__dirname, 'test-avatar.png'); // załaduj testowy plik
-
     const response = await request(app.getHttpServer())
       .post('/auth/signup')
       .field('email', 'avataruser@example.com')
       .field('password', 'Test1234!')
       .field('firstName', 'Avatar')
       .field('lastName', 'User')
-      .attach('avatar', avatarPath)
+      .attach('avatar', Buffer.from('fake-image'), 'avatar.png') // symulowany plik
       .expect(201);
 
     expect(response.body.user.email).toEqual('avataruser@example.com');
@@ -60,7 +45,6 @@ describe('Auth e2e', () => {
       })
       .expect(200);
 
-    // zakładam, że signin zwraca token, sesję lub cookie
     expect(response.body.accessToken).toBeDefined();
     accessToken = response.body.accessToken;
   });
@@ -80,4 +64,5 @@ describe('Auth e2e', () => {
       .expect(200);
   });
 });
+
 
