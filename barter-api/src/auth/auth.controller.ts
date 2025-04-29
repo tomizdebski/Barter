@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   Post,
   Req,
   Res,
@@ -20,8 +21,10 @@ import {
   ApiOperation,
   ApiResponse,
   ApiTags,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { Request, Response } from 'express';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -31,10 +34,7 @@ export class AuthController {
   @Post('signup')
   @ApiOperation({ summary: 'Register a new user' })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    description: 'Sign up with optional avatar upload',
-    type: SignUpDto,
-  })
+  @ApiBody({ type: SignUpDto })
   @ApiResponse({ status: 201, description: 'User successfully registered' })
   @UseInterceptors(
     FileInterceptor('avatar', {
@@ -49,39 +49,40 @@ export class AuthController {
   )
   async signup(
     @Body() dto: SignUpDto,
-    @UploadedFile() avatar: Express.Multer.File,
+    @UploadedFile() avatar?: Express.Multer.File,
   ) {
     const avatarPath = avatar ? `uploads/${avatar.filename}` : null;
-
-    const newUser = await this.authService.signup({
-      ...dto,
-      avatar: avatarPath,
-    });
-
-    return {
-      message: 'User successfully registered',
-      user: newUser,
-    };
+    return this.authService.signup({ ...dto, avatar: avatarPath });
   }
 
   @Post('signin')
+  @HttpCode(200)
   @ApiOperation({ summary: 'Sign in with email and password' })
   @ApiBody({ type: SigninDto })
   @ApiResponse({ status: 200, description: 'User successfully signed in' })
-  async signin(@Body() dto: SigninDto, @Req() req, @Res() res) {
+  async signin(
+    @Body() dto: SigninDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     return this.authService.signin(dto, req, res);
   }
 
   @Get('signout')
   @ApiOperation({ summary: 'Sign out the user' })
   @ApiResponse({ status: 200, description: 'User signed out' })
-  async signout(@Req() req, @Res() res) {
+  async signout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     return this.authService.signout(req, res);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Get('me')
-  async me(@Req() req) {
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get currently authenticated user' })
+  @ApiResponse({ status: 200, description: 'Current user info' })
+  async me(@Req() req: Request) {
     return this.authService.me(req);
   }
 }
+
+

@@ -109,12 +109,12 @@ function LessonCard({ lesson, title, isDarkSide }: { lesson: Lesson; title: stri
       )}
 
       {/* Card Content */}
-      <div className="p-8 flex flex-col items-center w-full">
+      <div className="p-8 flex flex-col items-start w-full">
         <h2 className={`text-2xl font-bold mb-2 text-center ${textColor}`}>{title}</h2>
         <h3 className="text-3xl font-semibold text-center mb-6">{lesson.name}</h3>
 
         {/* Lesson description */}
-        <p className={`text-center text-base mb-6 px-6 ${isDarkSide ? "text-gray-700" : "text-gray-300"}`}>
+        <p className={` text-base mb-6 px-6 ${isDarkSide ? "text-gray-700" : "text-gray-300"}`}>
           {lesson.content}
         </p>
 

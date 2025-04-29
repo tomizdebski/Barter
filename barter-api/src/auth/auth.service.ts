@@ -1,14 +1,14 @@
-import { PrismaService } from 'prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import {
   BadRequestException,
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-import { SignUpDto  } from './dto/signup.dto';
+import { SignUpDto } from './dto/signup.dto';
 import { SigninDto } from './dto/signin.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { jwtSecret } from 'src/utils/constans';
+import { jwtSecret } from '../utils/constans';
 import { Request, Response } from 'express';
 
 @Injectable()
@@ -20,35 +20,35 @@ export class AuthService {
 
   async signup(dto: SignUpDto) {
     const { email, password, avatar, firstName, lastName } = dto;
-  
+
     const foundUser = await this.prisma.users.findUnique({ where: { email } });
     if (foundUser) {
-      throw new BadRequestException("User already exists");
+      throw new BadRequestException('User already exists');
     }
-  
+
     const hashedPassword = await this.hashPassword(password);
-  
+
     const newUser = await this.prisma.users.create({
       data: {
         email,
         password: hashedPassword,
         avatar: avatar || null,
-        firstName,         
-        lastName,     
+        firstName,
+        lastName,
       },
     });
-  
+
     return {
-      message: "signup was successful",
+      message: 'User successfully registered',
       user: {
         id: newUser.id,
         email: newUser.email,
         firstName: newUser.firstName,
         lastName: newUser.lastName,
+        avatar: newUser.avatar,
       },
     };
   }
-  
 
   async signin(dto: SigninDto, req: Request, res: Response) {
     const { email, password } = dto;
@@ -67,7 +67,6 @@ export class AuthService {
       throw new BadRequestException('Invalid password');
     }
 
-    // ➕ dodaj wszystkie dane do tokena
     const token = await this.signToken({
       id: foundUser.id.toString(),
       email: foundUser.email,
@@ -80,20 +79,22 @@ export class AuthService {
       throw new ForbiddenException();
     }
 
-    // 🍪 zapisz JWT w cookie
     res.cookie('token', token, {
       httpOnly: false,
-      secure: false, // ustaw na true jeśli używasz HTTPS
+      secure: false,
       sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 dni
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return res.send({ message: 'Logged in succesfully' });
+    return {
+      message: 'Logged in successfully',
+      accessToken: token,
+    };
   }
 
   async signout(req: Request, res: Response) {
     res.clearCookie('token');
-    return res.send({ message: 'Logged out successfully' });
+    return { message: 'Logged out successfully' };
   }
 
   async me(req: Request) {
@@ -102,9 +103,7 @@ export class AuthService {
   }
 
   async hashPassword(password: string) {
-    const saltOrRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltOrRounds);
-    return hashedPassword;
+    return bcrypt.hash(password, 10);
   }
 
   async comparePassword(args: { password: string; hashedPassword: string }) {
@@ -112,7 +111,6 @@ export class AuthService {
     return bcrypt.compare(password, hashedPassword);
   }
 
-  // 🔁 teraz przyjmujemy więcej danych
   async signToken(user: {
     id: string;
     email: string;

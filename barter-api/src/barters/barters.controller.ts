@@ -6,6 +6,7 @@ import {
   UseGuards,
   Request,
   Param,
+  HttpCode,
 } from '@nestjs/common'; // <-- dodajemy też Param!
 import { BartersService } from './barters.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -81,6 +82,7 @@ export class BartersController {
 
   @UseGuards(JwtAuthGuard)
   @Post(':id/accept')
+  @HttpCode(200)
   @ApiOperation({ summary: 'Accept a barter request' })
   @ApiResponse({ status: 200, description: 'Barter accepted' })
   acceptBarter(@Request() req, @Param('id') id: string) {
