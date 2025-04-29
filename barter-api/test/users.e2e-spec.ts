@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
-import { faker } from '@faker-js/faker'; // <- dodaj faker do generowania danych
+import { faker } from '@faker-js/faker'; 
 
 describe('Users e2e', () => {
   let app: INestApplication;
@@ -31,8 +31,8 @@ describe('Users e2e', () => {
   
     console.log('Signup response:', res.body);
   
-    userId = res.body.user.user.id;      // <-- poprawka tutaj
-    email = res.body.user.user.email;    // <-- i tutaj
+    userId = res.body.user.user.id;     
+    email = res.body.user.user.email;    
   });
   
 
