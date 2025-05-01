@@ -1,48 +1,81 @@
-"use client";
+'use client';
 
-import { useRef, useState } from "react";
-import Image from "next/image";
-import ChatAiWithEyes from "./ChatAiWithEyes";
-import { useUser } from "@/contexts/UserContext";
+import { useRef, useState, useEffect } from 'react';
+import Image from 'next/image';
+import ChatAiWithEyes from './ChatAiWithEyes';
+import { useUser } from '@/contexts/UserContext';
+import { motion, AnimatePresence } from 'framer-motion';
 
 type Message = {
-  role: "user" | "bot" | "bot-temp";
+  role: 'user' | 'bot' | 'bot-temp';
   text: string;
 };
 
 export default function ChatWidget() {
   const { user } = useUser();
   const [isOpen, setIsOpen] = useState(false);
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
+  const [showBubble, setShowBubble] = useState(false);
   const chatRef = useRef<HTMLDivElement>(null);
+
+  // Pokaż chmurkę po starcie
+  useEffect(() => {
+    const timer = setTimeout(() => setShowBubble(true), 1000);
+    const hide = setTimeout(() => setShowBubble(false), 6000);
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(hide);
+    };
+  }, []);
+
+  // Otwórz czat z automatyczną wiadomością
+  const handleOpen = () => {
+    setIsOpen(true);
+    setMessages((prev) => {
+      const alreadyGreeted = prev.some(
+        (m) =>
+          m.role === 'bot' &&
+          m.text.includes("I'm here to help")
+      );
+      if (alreadyGreeted) return prev;
+      return [
+        ...prev,
+        {
+          role: 'bot',
+          text:
+            "Hi there! 👋 I'm here to help. Ask me anything about lessons, barters or quizzes!",
+        },
+      ];
+    });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
 
     if (!user?.id) {
-      alert("Musisz być zalogowany, aby korzystać z czatu.");
+      alert('Musisz być zalogowany, aby korzystać z czatu.');
       return;
     }
 
-    const userMessage: Message = { role: "user", text: input };
+    const userMessage: Message = { role: 'user', text: input };
     setMessages((prev) => [...prev, userMessage]);
-    setInput("");
+    setInput('');
 
     const eventSource = new EventSource(
-      `http://localhost:4000/chat/stream?userId=${user.id}&prompt=${encodeURIComponent(
+      `${process.env.NEXT_PUBLIC_API_URL}/chat/stream?userId=${user.id}&prompt=${encodeURIComponent(
         input
       )}`
     );
 
-    let botText = "";
+    let botText = '';
 
     eventSource.onmessage = (e) => {
       botText += e.data;
       setMessages((prev) => {
-        const others = prev.filter((m) => m.role !== "bot-temp");
-        return [...others, { role: "bot-temp", text: botText }];
+        const others = prev.filter((m) => m.role !== 'bot-temp');
+        return [...others, { role: 'bot-temp', text: botText }];
       });
 
       setTimeout(() => {
@@ -53,11 +86,11 @@ export default function ChatWidget() {
     eventSource.onerror = () => {
       eventSource.close();
       setMessages((prev) => {
-        const temp = prev.find((m) => m.role === "bot-temp");
-        const others = prev.filter((m) => m.role !== "bot-temp");
+        const temp = prev.find((m) => m.role === 'bot-temp');
+        const others = prev.filter((m) => m.role !== 'bot-temp');
         return [
           ...others,
-          { role: "bot", text: temp?.text || "[Błąd odpowiedzi]" },
+          { role: 'bot', text: temp?.text || '[Błąd odpowiedzi]' },
         ];
       });
     };
@@ -65,16 +98,40 @@ export default function ChatWidget() {
 
   return (
     <div className="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">
+      {/* Ikona czatu + dymek */}
       {!isOpen && (
-        <button
-          onClick={() => setIsOpen(true)}
-          className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center hover:scale-105 transition"
-          aria-label="Open chat"
-        >
-          <ChatAiWithEyes />
-        </button>
+        <div className="relative">
+          <button
+            onClick={handleOpen}
+            className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center hover:scale-105 transition"
+            aria-label="Open chat"
+          >
+            <ChatAiWithEyes />
+          </button>
+
+          <AnimatePresence>
+            {showBubble && (
+              <motion.div
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 10 }}
+                transition={{ duration: 0.3 }}
+                className="absolute right-16 bottom-1 sm:bottom-2 bg-white border border-gray-300 text-sm text-[#00262b] shadow-md rounded-lg px-4 py-2 w-56 z-40"
+              >
+                💬 Need help? I can:
+                <ul className="list-disc pl-5 mt-1 text-xs leading-tight">
+                  <li>Find lessons</li>
+                  <li>Start a barter</li>
+                  <li>Suggest quizzes</li>
+                  <li>Contact instructors</li>
+                </ul>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       )}
 
+      {/* Okno czatu */}
       {isOpen && (
         <div className="w-[95vw] max-w-[360px] h-[85vh] max-h-[600px] bg-white rounded-xl shadow-xl flex flex-col overflow-hidden">
           {/* Pasek górny */}
@@ -105,9 +162,9 @@ export default function ChatWidget() {
               <div
                 key={i}
                 className={`p-2 rounded-lg max-w-[80%] whitespace-pre-wrap ${
-                  msg.role === "user"
-                    ? "bg-[#00262b] text-white ml-auto"
-                    : "bg-gray-100 text-gray-900"
+                  msg.role === 'user'
+                    ? 'bg-[#00262b] text-white ml-auto'
+                    : 'bg-gray-100 text-gray-900'
                 }`}
               >
                 {msg.text}
@@ -124,7 +181,7 @@ export default function ChatWidget() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Napisz wiadomość..."
+              placeholder="Type your message..."
               className="flex-1 border border-[#00262b] text-[#00262b] rounded px-3 py-2 text-sm focus:outline-none"
             />
             <button type="submit" className="ml-2 text-[#00262b]">
@@ -145,3 +202,6 @@ export default function ChatWidget() {
     </div>
   );
 }
+
+
+
