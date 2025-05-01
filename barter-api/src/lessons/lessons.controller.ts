@@ -46,7 +46,6 @@ export class LessonsController {
   @ApiResponse({ status: 200, description: "List of user's lessons" })
   @UseGuards(JwtAuthGuard) // 🔥 jeśli masz auth (np. JWT Guard)
   async getMyLessons(@Req() req: any) {
-    
     const userId = req.user.id; // lub req.user.id zależnie jak masz JWT
     return this.lessonsService.findByInstructor(userId);
   }
@@ -62,6 +61,24 @@ export class LessonsController {
   @ApiResponse({ status: 200, description: 'Search results' })
   async searchLessons(@Query('q') query: string) {
     return this.lessonsService.search(query);
+  }
+
+  @Get('by-ids')
+  @ApiOperation({ summary: 'Get multiple lessons by ID array' })
+  @ApiQuery({
+    name: 'ids',
+    required: true,
+    example: '1,2,3',
+    description: 'Comma-separated lesson IDs',
+  })
+  @ApiResponse({ status: 200, description: 'Array of lessons' })
+  async findByIds(@Query('ids') ids: string) {
+    const idsArray = ids
+      .split(',')
+      .map((id) => parseInt(id.trim()))
+      .filter((id) => !isNaN(id));
+
+    return this.lessonsService.findManyByIds(idsArray);
   }
 
   @Get(':id')

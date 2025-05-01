@@ -237,9 +237,9 @@ export default function Dashboard() {
             link="/lessons/create"
           />
           <DashboardCard
-            title="Settings"
+            title="Account"
             description="Manage your profile & account"
-            link="/settings"
+            link="/account"
           />
         </div>
 

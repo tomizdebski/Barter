@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import React, { useMemo } from "react";
 import Image from "next/image";
+import { FavoriteButton } from "./FavoriteButton";
 
 export type LessonCardProps = {
   id: number;
@@ -39,7 +40,7 @@ const LessonCard: React.FC<LessonCardProps> = ({
       <div className="w-full h-40" style={{ backgroundColor: pastelColor }}>
         {photo ? (
           <Image
-            src={`http://localhost:4000/${photo}`}
+            src={`${process.env.NEXT_PUBLIC_API_URL}/${photo}`}
             alt={name}
             width={600}
             height={400}
@@ -51,11 +52,17 @@ const LessonCard: React.FC<LessonCardProps> = ({
           </div>
         )}
       </div>
+
+      {/* Tytuł + serduszko */}
       <div className="p-4 bg-white">
-        <h3 className="font-semibold text-[#00262b]">{name}</h3>
+        <div className="flex justify-between items-start">
+          <h3 className="font-semibold text-[#00262b]">{name}</h3>
+          <FavoriteButton lessonId={id} />
+        </div>
         <p className="text-sm text-gray-600 line-clamp-2">{content}</p>
         <p className="text-xs text-gray-400 mt-1">by {instructorName}</p>
       </div>
+
       <div className="px-4 pb-4 bg-white flex justify-between items-center">
         <span className="inline-block mt-2 bg-[#E1DDD0] text-xs px-3 py-1 rounded-full shadow text-gray-700">
           {categoryName}
@@ -69,6 +76,8 @@ const LessonCard: React.FC<LessonCardProps> = ({
 };
 
 export default LessonCard;
+
+
 
 
 

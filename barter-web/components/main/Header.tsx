@@ -1,14 +1,16 @@
-'use client';
+"use client";
 
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/contexts/UserContext";
-import { Plus, ShoppingCart, Menu, X } from "lucide-react";
+import { Plus, Menu, X, Heart } from "lucide-react";
 import QuizIcon from "../quiz/QuizIcon";
 import { AnimatePresence, motion } from "framer-motion";
 import UserDropdown from "../UserDropdown";
+import { CustomTooltip } from "../CustomTooltip";
+import FavouritesDropdown from "../FavouritesDropdown";
 
 const Header: React.FC = () => {
   const pathname = usePathname();
@@ -55,7 +57,12 @@ const Header: React.FC = () => {
             className="flex-1 text-[#00262b] focus:outline-none"
           />
           <button type="submit" className="ml-2 p-1 hover:opacity-80">
-            <Image src="/icons/search.svg" alt="Search icon" width={20} height={20} />
+            <Image
+              src="/icons/search.svg"
+              alt="Search icon"
+              width={20}
+              height={20}
+            />
           </button>
         </form>
 
@@ -68,11 +75,18 @@ const Header: React.FC = () => {
 
           {user && (
             <>
-              <Link href="/cart">
-                <button className="p-2 rounded-full hover:bg-gray-100">
-                  <ShoppingCart size={20} className="text-[#00262b]" />
-                </button>
-              </Link>
+              <div
+                data-tooltip-id="like-tooltip"
+                className="inline-block p-2 rounded-full hover:bg-gray-100 cursor-pointer"
+              >
+                <FavouritesDropdown />
+              </div>
+
+              <CustomTooltip
+                id="like-tooltip"
+                content="Your favorite lessons"
+              />
+
               <Link href="/lessons/create">
                 <button className="flex items-center gap-2 w-36 px-4 py-2 rounded-full bg-[#00262b] text-white hover:bg-[#00404d] transition text-sm whitespace-nowrap">
                   <Plus size={16} /> Add Lesson
@@ -127,7 +141,12 @@ const Header: React.FC = () => {
         {/* Right: Search icon */}
         <div className="flex-shrink-0">
           <button onClick={() => setIsSearchOpen(true)} className="p-2">
-            <Image src="/icons/search.svg" alt="Search icon" width={24} height={24} />
+            <Image
+              src="/icons/search.svg"
+              alt="Search icon"
+              width={24}
+              height={24}
+            />
           </button>
         </div>
       </div>
@@ -159,8 +178,13 @@ const Header: React.FC = () => {
             className="fixed top-0 left-0 w-full h-screen bg-white shadow-md z-50 p-4 flex flex-col gap-4 min-[800px]:hidden"
           >
             <div className="flex justify-between items-center mb-2">
-              <span className="font-semibold text-[#00262b] text-lg">Search</span>
-              <button onClick={() => setIsSearchOpen(false)} aria-label="Close search">
+              <span className="font-semibold text-[#00262b] text-lg">
+                Search
+              </span>
+              <button
+                onClick={() => setIsSearchOpen(false)}
+                aria-label="Close search"
+              >
                 <X size={24} className="text-[#00262b]" />
               </button>
             </div>
@@ -168,7 +192,12 @@ const Header: React.FC = () => {
               onSubmit={handleSearchSubmit}
               className="flex items-center border border-[#00262b] rounded px-4 py-2"
             >
-              <Image src="/icons/search.svg" alt="Search icon" width={20} height={20} />
+              <Image
+                src="/icons/search.svg"
+                alt="Search icon"
+                width={20}
+                height={20}
+              />
               <input
                 type="text"
                 value={query}
@@ -192,4 +221,3 @@ const Header: React.FC = () => {
 };
 
 export default Header;
-

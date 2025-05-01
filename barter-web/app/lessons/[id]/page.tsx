@@ -7,6 +7,7 @@ import ImageVideoSwitcher from "@/components/ImageVideoCarousel";
 import AskQuestionModal from "./AskQuestionModal";
 import ProposeBarterModal from "./ProposeBarterModal";
 import LessonActions from "./LessonActions";
+import { FavoriteButton } from "@/components/FavoriteButton";
 
 export async function generateMetadata({
   params,
@@ -60,7 +61,10 @@ export default async function LessonDetailPage({
           />
 
           <div className="bg-white p-6 rounded-md shadow-sm">
-            <h1 className="text-2xl font-bold mb-2">{lesson.name}</h1>
+            <div className="flex items-center justify-between mb-2">
+              <h1 className="text-2xl font-bold">{lesson.name}</h1>
+              <FavoriteButton lessonId={lesson.id} />
+            </div>
             <p className="text-sm text-gray-600 mb-4">
               Skill: {lesson.category?.name} • Location:{" "}
               {lesson.localization ?? "Online"}
