@@ -34,6 +34,7 @@ const LessonCard: React.FC<LessonCardProps> = ({
 
   return (
     <div
+      data-testid="lesson-card"
       className="rounded-lg shadow-sm border border-gray-200 overflow-hidden cursor-pointer transition hover:scale-[1.01]"
       onClick={() => router.push(`/lessons/${id}`)}
     >

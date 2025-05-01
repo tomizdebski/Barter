@@ -16,7 +16,7 @@ export default function AskForm({
 
   const send = async () => {
     setStatus('sending')
-    const res = await fetch('http://localhost:4000/messages', {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/messages`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ to: instructorEmail, message, lessonId }),
