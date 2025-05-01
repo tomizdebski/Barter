@@ -39,6 +39,21 @@ export class LessonsService {
     });
   }
 
+  async findManyByIds(ids: number[]) {
+    return this.prisma.lessons.findMany({
+      where: { id: { in: ids } },
+      select: {
+        id: true,
+        name: true,
+        photo: true,
+        category: {
+          select: { name: true }
+        }
+      }
+    });
+  }
+  
+
   async findById(id: string) {
     const lesson = await this.prisma.lessons.findUnique({
       where: { id: parseInt(id) },

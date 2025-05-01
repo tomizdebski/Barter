@@ -3,17 +3,12 @@
 
 import { motion } from "framer-motion";
 import { HelpCircle } from "lucide-react";
-import { Tooltip } from "react-tooltip";
+import { CustomTooltip } from "../CustomTooltip";
 
 const QuizIcon: React.FC = () => {
   return (
     <>
-      <Tooltip
-        id="quiz-tooltip"
-        place="top"
-        content="Put your skills to the test!"
-        className="text-sm bg-[#00262b] text-white px-2 py-1 rounded shadow-md z-50"
-      />
+      <CustomTooltip id="quiz-tooltip" content="Take a quiz to test your knowledge!" />
 
       <motion.div
         data-tooltip-id="quiz-tooltip"

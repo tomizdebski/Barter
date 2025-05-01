@@ -96,7 +96,7 @@ export default function TrendingSection() {
 
         {/* Sortowanie */}
         <div className="mt-6 flex gap-4 items-center flex-wrap">
-          <span className="text-sm font-medium text-[#00262b]">Sortuj:</span>
+          <span className="text-sm font-medium text-[#00262b]">Sort:</span>
           <button
             onClick={() => setSortOrder("newest")}
             className={`text-sm px-3 py-1 border rounded-full transition ${
@@ -105,7 +105,7 @@ export default function TrendingSection() {
                 : "bg-[#E1DDD0] text-[#00262b] hover:bg-[#00262b] hover:text-white"
             }`}
           >
-            Od najnowszych
+            From newest
           </button>
           <button
             onClick={() => setSortOrder("oldest")}
@@ -115,7 +115,7 @@ export default function TrendingSection() {
                 : "bg-[#E1DDD0] text-[#00262b] hover:bg-[#00262b] hover:text-white"
             }`}
           >
-            Od najstarszych
+            From oldest
           </button>
         </div>
 

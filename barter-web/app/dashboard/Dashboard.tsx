@@ -64,7 +64,7 @@ export default function Dashboard() {
     const fetchActivities = async () => {
       try {
         const res = await fetch(
-          `http://localhost:4000/users/${user?.id}/activities`,
+          `${process.env.NEXT_PUBLIC_API_URL}/users/${user?.id}/activities`,
           { credentials: "include" }
         );
         if (!res.ok) throw new Error("Failed to fetch activities");
@@ -85,7 +85,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchLessons = async () => {
       try {
-        const res = await fetch(`http://localhost:4000/lessons/my`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/lessons/my`, {
           credentials: "include",
         });
         if (!res.ok) throw new Error("Failed to fetch lessons");
@@ -106,7 +106,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchBarters = async () => {
       try {
-        const res = await fetch(`http://localhost:4000/barters/sent`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/barters/sent`, {
           credentials: "include",
         });
         if (!res.ok) throw new Error("Failed to fetch barters");
@@ -127,7 +127,7 @@ export default function Dashboard() {
   const handleAcceptBarter = async (barterId: number) => {
     try {
       const res = await fetch(
-        `http://localhost:4000/barters/${barterId}/accept`,
+        `${process.env.NEXT_PUBLIC_API_URL}/${barterId}/accept`,
         {
           method: "POST",
           credentials: "include",
@@ -171,7 +171,7 @@ export default function Dashboard() {
   const handleRejectBarter = async (barterId: number) => {
     try {
       const res = await fetch(
-        `http://localhost:4000/barters/${barterId}/reject`,
+        `${process.env.NEXT_PUBLIC_API_URL}/${barterId}/reject`,
         {
           method: "POST",
           credentials: "include",
@@ -237,9 +237,9 @@ export default function Dashboard() {
             link="/lessons/create"
           />
           <DashboardCard
-            title="Settings"
+            title="Account"
             description="Manage your profile & account"
-            link="/settings"
+            link="/account"
           />
         </div>
 

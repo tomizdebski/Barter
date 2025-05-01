@@ -34,7 +34,7 @@ const UserDropdown: React.FC = () => {
         className="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-gray-100 transition"
       >
         <Image
-          src={`http://localhost:4000/${user.avatarUrl}`}
+          src={`${process.env.NEXT_PUBLIC_API_URL}/${user.avatarUrl}`}
           alt={user.email}
           width={36}
           height={36}
@@ -59,7 +59,7 @@ const UserDropdown: React.FC = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Image
-                src={`http://localhost:4000/${user.avatarUrl}`}
+                src={`${process.env.NEXT_PUBLIC_API_URL}/${user.avatarUrl}`}
                 alt="Avatar"
                 width={40}
                 height={40}
@@ -82,9 +82,7 @@ const UserDropdown: React.FC = () => {
             <Link href="/dashboard" className="hover:bg-gray-100 rounded px-4 py-2">
               Dashboard
             </Link>
-            <Link href="/settings" className="hover:bg-gray-100 rounded px-4 py-2">
-              Settings
-            </Link>
+            
             <Link href="/account" className="hover:bg-gray-100 rounded px-4 py-2">
               Account
             </Link>
@@ -92,7 +90,7 @@ const UserDropdown: React.FC = () => {
               Add Lesson
             </Link>
             <Link href="/my-basket" className="hover:bg-gray-100 rounded px-4 py-2">
-              My Basket
+              My Favourite
             </Link>
           </div>
 
