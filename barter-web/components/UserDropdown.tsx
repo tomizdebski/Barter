@@ -59,7 +59,7 @@ const UserDropdown: React.FC = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Image
-                src={`http://localhost:4000/${user.avatarUrl}`}
+                src={`${process.env.NEXT_PUBLIC_API_URL}/${user.avatarUrl}`}
                 alt="Avatar"
                 width={40}
                 height={40}
