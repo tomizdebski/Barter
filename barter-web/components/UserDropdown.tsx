@@ -89,8 +89,8 @@ const UserDropdown: React.FC = () => {
             <Link href="/lessons/create" className="hover:bg-gray-100 rounded px-4 py-2">
               Add Lesson
             </Link>
-            <Link href="/my-basket" className="hover:bg-gray-100 rounded px-4 py-2">
-              My Favourite
+            <Link href="/my-favourites" className="hover:bg-gray-100 rounded px-4 py-2">
+              My Favourites
             </Link>
           </div>
 
