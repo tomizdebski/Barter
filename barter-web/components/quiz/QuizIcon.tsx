@@ -1,23 +1,25 @@
 
-"use client";
+'use client';
 
 import { motion } from "framer-motion";
-import { HelpCircle } from "lucide-react";
 import { CustomTooltip } from "../CustomTooltip";
 
 const QuizIcon: React.FC = () => {
   return (
     <>
-      <CustomTooltip id="quiz-tooltip" content="Take a quiz to test your knowledge!" />
+      <CustomTooltip
+        id="quiz-tooltip"
+        content="🎯 Ready? Take a quiz and test your skills!"
+      />
 
       <motion.div
         data-tooltip-id="quiz-tooltip"
-        whileHover={{ scale: 1.1, rotate: 5 }}
+        whileHover={{ scale: 1.1, rotate: 2 }}
         whileTap={{ scale: 0.95 }}
         transition={{ type: "spring", stiffness: 300 }}
-        className="cursor-pointer flex items-center justify-center"
+        className="cursor-pointer font-semi-bold text-xl text-[#00262b]  hover:text-[#d64000] "
       >
-        <HelpCircle size={20} className="text-[#00262b] animate-pulse group-hover:text-[#d64000]" />
+        Quiz 
       </motion.div>
     </>
   );
