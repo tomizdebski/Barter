@@ -1,3 +1,4 @@
+'use client';
 import { BarterPage } from './BarterPage';
 import { useParams } from 'next/navigation';
 
