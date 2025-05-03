@@ -11,7 +11,7 @@ import { jwtDecode } from "jwt-decode";
 import { useUser } from "@/contexts/UserContext"; 
 import type { User } from "@/contexts/UserContext"; 
 
-// ✏️ Zod schema
+//  Zod schema
 const schema = z.object({
   email: z.string().min(1, "Email is required").email("Invalid email"),
   password: z.string().min(6, "Password must be at least 6 characters"),
@@ -22,7 +22,7 @@ type FormValues = z.infer<typeof schema>;
 export default function LoginPage() {
   const router = useRouter();
   const [serverError, setServerError] = useState("");
-  const { setUser } = useUser(); // 🧠 ustawiamy usera do kontekstu
+  const { setUser } = useUser(); // 
 
   const {
     register,
@@ -51,7 +51,7 @@ export default function LoginPage() {
         return;
       }
 
-      // ✅ Po udanym logowaniu — dekoduj token i ustaw usera
+      //  Po udanym logowaniu — dekoduj token i ustaw usera
       const token = document.cookie
         .split("; ")
         .find((row) => row.startsWith("token="))
