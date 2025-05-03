@@ -14,8 +14,8 @@ export default function ImageVideoCarousel({ photo, video, title }: Props) {
   const [activeIndex, setActiveIndex] = useState(0)
 
   const slides = [
-    { type: 'image', src: `http://localhost:4000/${photo}` },
-    { type: 'video', src: `http://localhost:4000/${video}` },
+    { type: 'image', src: `${process.env.NEXT_PUBLIC_API_URL}/${photo}` },
+    { type: 'video', src: `${process.env.NEXT_PUBLIC_API_URL}/${video}` },
   ]
 
   const prev = () => setActiveIndex((prev) => (prev === 0 ? slides.length - 1 : prev - 1))

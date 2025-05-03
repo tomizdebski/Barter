@@ -17,7 +17,7 @@ type UserContextType = {
   logout: () => void;
 };
 
-const UserContext = createContext<UserContextType | undefined>(undefined);
+export const UserContext = createContext<UserContextType | undefined>(undefined);
 
 function getCookie(name: string): string | undefined {
   const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
