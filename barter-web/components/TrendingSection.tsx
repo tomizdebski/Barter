@@ -28,7 +28,7 @@ export default function TrendingSection() {
   useEffect(() => {
     const fetchLessons = async () => {
       try {
-        const res = await fetch("http://localhost:4000/lessons", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/lessons`, {
           credentials: "include",
         });
         const data = await res.json();
@@ -40,7 +40,7 @@ export default function TrendingSection() {
 
     const fetchCategories = async () => {
       try {
-        const res = await fetch("http://localhost:4000/categories", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`, {
           credentials: "include",
         });
         const data = await res.json();
