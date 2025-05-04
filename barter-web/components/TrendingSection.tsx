@@ -134,6 +134,7 @@ export default function TrendingSection() {
             />
           ))}
         </div>
+        {/* No lessons found */}
 
         {/* CTA */}
         <div className="text-center mt-10">
