@@ -94,7 +94,7 @@ export class LessonsController {
     summary: 'Create a new lesson with optional photo and video',
   })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: CreateLessonDto }) // Swagger wymaga DTO jako typ
+  @ApiBody({ type: CreateLessonDto }) 
   @ApiResponse({ status: 201, description: 'Lesson created successfully' })
   @UseInterceptors(
     FileFieldsInterceptor(

@@ -17,7 +17,7 @@ const QuizIcon: React.FC = () => {
         whileHover={{ scale: 1.1, rotate: 2 }}
         whileTap={{ scale: 0.95 }}
         transition={{ type: "spring", stiffness: 300 }}
-        className="cursor-pointer font-semi-bold text-xl text-[#00262b]  hover:text-[#d64000] "
+        className="cursor-pointer text-[14px] font-semi-bold text-[#00262b]  hover:text-[#d64000] "
       >
         Quiz 
       </motion.div>

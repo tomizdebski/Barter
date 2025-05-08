@@ -16,8 +16,8 @@ import * as path from 'path';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: path.join(process.cwd(), 'uploads'), // Ścieżka do folderu, który zawiera pliki
-      serveRoot: '/uploads/', // Prefiks URL, np. /uploads/{filename}
+      rootPath: path.join(process.cwd(), 'uploads'),
+      serveRoot: '/uploads/',
     }),
     AuthModule,
     UsersModule,

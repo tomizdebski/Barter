@@ -1,2 +1,0 @@
-seed db from github
-docker run -it --rm -v ${PWD}:/backup postgres psql postgresql://admin:secret@host.docker.internal:5434/barterdb -f /backup/barterdb_backup.sql
