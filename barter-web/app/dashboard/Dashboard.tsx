@@ -210,7 +210,7 @@ export default function Dashboard() {
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold text-white">
-            Welcome back, {user?.firstName}! 👋
+            Welcome , {user?.firstName}!
           </h1>
           <p className="text-gray-100 mt-2">
             Here's what's happening on your account.
