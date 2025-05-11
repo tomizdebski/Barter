@@ -20,6 +20,7 @@ services:
     container_name: barter-api
     depends_on:
       - postgres
+      - ollama
     env_file:
       - .env
     ports:
@@ -41,8 +42,21 @@ services:
     networks:
       - barter-net
 
+  ollama:
+    image: ollama/ollama
+    container_name: barter-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - barter-net
+    restart: unless-stopped
+
 volumes:
   pgdata:
+  ollama_data:
 
 networks:
   barter-net:
+
