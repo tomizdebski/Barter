@@ -1,5 +1,6 @@
+// src/chat/chat.controller.ts
 import { Controller, Sse, Query } from '@nestjs/common';
-import { Observable } from 'rxjs';
+import { Observable, from } from 'rxjs';
 import { ChatService } from './chat.service';
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 
@@ -26,7 +27,6 @@ export class ChatController {
     @Query('userId') userId: string,
     @Query('prompt') prompt: string,
   ): Observable<string> {
-    return this.chatService.streamLlamaResponse(parseInt(userId), prompt);
+    return from(this.chatService.streamLlamaResponse(parseInt(userId), prompt));
   }
 }
-

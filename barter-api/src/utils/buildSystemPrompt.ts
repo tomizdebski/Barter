@@ -3,6 +3,26 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+async function findRelevantLessons(query: string) {
+  const lessons = await prisma.lessons.findMany({
+    where: {
+      OR: [
+        { name: { contains: query, mode: 'insensitive' } },
+        { content: { contains: query, mode: 'insensitive' } },
+      ],
+    },
+    include: {
+      category: true,
+      instructor: true,
+    },
+    take: 5,
+  });
+
+  return lessons.map((l) =>
+    `• ${l.name} (${l.category.name}) — prowadzi: ${l.instructor.firstName} ${l.instructor.lastName}`
+  ).join('\n') || 'Brak pasujących lekcji.';
+}
+
 export async function buildSystemPrompt(userId: number, userInput: string): Promise<string> {
   const user = await prisma.users.findUnique({
     where: { id: userId },
@@ -27,6 +47,8 @@ export async function buildSystemPrompt(userId: number, userInput: string): Prom
     `• ${skill.name} (poziom ${skill.level})`
   ).join('\n') || 'Brak umiejętności.';
 
+  const relatedLessons = await findRelevantLessons(userInput);
+
   return `
 Jesteś AI-asystentem użytkownika platformy Barter.
 
@@ -41,9 +63,14 @@ ${instructorLessons}
 📚 Lekcje jako student:
 ${studentLessons}
 
-Pytanie użytkownika: "${userInput}"
+🔍 Powiązane lekcje z bazy danych:
+${relatedLessons}
+
+📩 Pytanie użytkownika:
+"${userInput}"
 
 Na podstawie powyższych danych odpowiedz po polsku, zwięźle i przyjaźnie.
 `.trim();
 }
+
 
