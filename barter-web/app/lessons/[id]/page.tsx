@@ -4,10 +4,9 @@ import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import ImageVideoSwitcher from '@/components/ImageVideoCarousel';
-import AskQuestionModal from './AskQuestionModal';
-import ProposeBarterModal from './ProposeBarterModal';
 import LessonActions from './LessonActions';
 import { FavoriteButton } from '@/components/FavoriteButton';
+
 
 type Lesson = {
   id: string;
