@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ['172.31.9.218'],
+    domains: ['172.31.9.218', 'localhost' ],
   },
   webpack(config, { dev }) {
     if (dev) {
