@@ -52,12 +52,10 @@ export default function CookieModal() {
       {/* === Trigger Button === */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-4 left-4 z-50 flex items-center gap-2 bg-[#1e1e1e] text-white rounded-full px-4 py-2 hover:pl-6 transition-all group"
+        className="fixed bottom-8 left-8 z-50 flex items-center  bg-[#1e1e1e] text-white rounded-full px-2 py-2  transition-all group"
       >
         <Image src="icons/cookies.svg" alt="Cookie Icon" width={24} height={24} />
-        <span className="opacity-0 group-hover:opacity-100 transition-opacity">
-          Cookie Settings
-        </span>
+        
       </button>
 
       {/* === Cookie Modal === */}
