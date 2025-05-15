@@ -38,8 +38,8 @@ export const BarterPage = ({ barterId }: Props) => {
   if (!barter) return <div>Loading...</div>;
 
   const Section = ({ number, lesson }: { number: number; lesson: Lesson }) => (
-    <div className="relative">
-      <div className="absolute top-4 left-4 text-6xl text-white opacity-20 font-bold">{number}</div>
+    <div className="relative shadow-lg shadow-gray-500/40 ">
+      <div className="w- absolute top-4 left-4 text-6xl text-white opacity-20 font-bold">{number}</div>
       <div
         className="border border-gray-500 p-4 bg-[#00262b] text-white hover:scale-[1.01] transition cursor-pointer"
         onClick={() => router.push(`/lessons/${lesson.id}`)}
@@ -86,7 +86,7 @@ export const BarterPage = ({ barterId }: Props) => {
       </div>
 
       {/* Message & Buttons */}
-      <div className=" border-t border-gray-700 pt-10 flex flex-col md:flex-row justify-between items-start md:items-center">
+      <div className="  pt-10 flex flex-col md:flex-row justify-between items-start md:items-center">
         <div>
           <h3 className="text-xl font-light">Message from requester</h3>
           <p className="text-gray-400 mt-2">{barter.message}</p>
