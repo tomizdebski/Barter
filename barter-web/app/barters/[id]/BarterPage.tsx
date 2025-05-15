@@ -41,7 +41,7 @@ export const BarterPage = ({ barterId }: Props) => {
     <div className="relative">
       <div className="absolute top-4 left-4 text-6xl text-white opacity-20 font-bold">{number}</div>
       <div
-        className="border border-gray-500 rounded p-4 bg-[#00262b] text-white hover:scale-[1.01] transition cursor-pointer"
+        className="border border-gray-500 p-4 bg-[#00262b] text-white hover:scale-[1.01] transition cursor-pointer"
         onClick={() => router.push(`/lessons/${lesson.id}`)}
       >
         <div className="h-64 w-full mb-4 relative overflow-hidden">
@@ -63,11 +63,11 @@ export const BarterPage = ({ barterId }: Props) => {
   );
 
   return (
-    <div className="min-h-screen bg-[#00262b] text-white px-6 py-10">
-      <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight italic text-center">Barter Offer</h1>
+    <div className=" bg-[#00262b] text-white px-6 py-6">
+      <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight italic text-center text-[#03c7e8]">Barter Offer</h1>
 
       {/* Wrapper z relative do wstawienia loga */}
-      <div className="relative grid grid-cols-1 md:grid-cols-2 gap-10">
+      <div className="relative grid grid-cols-1 md:grid-cols-2 gap-6">
 
         {/* Logo Barteru między kartami */}
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 animate-float">
@@ -86,14 +86,14 @@ export const BarterPage = ({ barterId }: Props) => {
       </div>
 
       {/* Message & Buttons */}
-      <div className="mt-16 border-t border-gray-700 pt-10 flex flex-col md:flex-row justify-between items-start md:items-center">
+      <div className=" border-t border-gray-700 pt-10 flex flex-col md:flex-row justify-between items-start md:items-center">
         <div>
           <h3 className="text-xl font-light">Message from requester</h3>
           <p className="text-gray-400 mt-2">{barter.message}</p>
         </div>
         <div className="flex gap-4 mt-4 md:mt-0">
           <button
-            className="px-6 py-2 border rounded border-green-500 text-green-500 hover:bg-green-500 hover:text-black transition"
+            className="px-6 py-2 border rounded-full border-green-500 text-green-500 hover:bg-green-500 hover:text-black transition"
             onClick={async () => {
               await fetch(`http://localhost:4000/barters/${barter.id}/accept`, { method: 'POST', credentials: 'include' });
               alert('Accepted');
@@ -102,7 +102,7 @@ export const BarterPage = ({ barterId }: Props) => {
             Accept
           </button>
           <button
-            className="px-6 py-2 border rounded border-red-500 text-red-500 hover:bg-red-500 hover:text-black transition"
+            className="px-6 py-2 border rounded-full border-red-500 text-red-500 hover:bg-red-500 hover:text-black transition"
             onClick={async () => {
               await fetch(`http://localhost:4000/barters/${barter.id}/reject`, { method: 'POST', credentials: 'include' });
               alert('Rejected');
