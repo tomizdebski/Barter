@@ -93,7 +93,12 @@ export class AuthService {
   }
 
   async signout(req: Request, res: Response) {
-    res.clearCookie('token');
+    res.clearCookie('token', {
+      httpOnly: true,
+      path: '/',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    });
     return { message: 'Logged out successfully' };
   }
 

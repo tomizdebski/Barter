@@ -1,63 +1,71 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import Image from 'next/image' // Zakładam że używasz Next.js
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 type Preferences = {
-  strictlyNecessary: boolean
-  performance: boolean
-  targeting: boolean
-}
+  strictlyNecessary: boolean;
+  performance: boolean;
+  targeting: boolean;
+};
 
 export default function CookieModal() {
-  const [isOpen, setIsOpen] = useState(false)
-  const [showDetails, setShowDetails] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
   const [preferences, setPreferences] = useState<Preferences>({
-    strictlyNecessary: true,
+    strictlyNecessary: false,
     performance: false,
     targeting: false,
-  })
+  });
+
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    const savedPrefs = localStorage.getItem('cookiePreferences')
+    setHydrated(true);
+
+    const savedPrefs = localStorage.getItem("cookiePreferences");
     if (!savedPrefs) {
-      setIsOpen(true)
+      setIsOpen(true);
     }
-  }, [])
+  }, []);
 
   const savePreferences = (prefs: Preferences) => {
-    localStorage.setItem('cookiePreferences', JSON.stringify(prefs))
-    setIsOpen(false)
-  }
+    localStorage.setItem("cookiePreferences", JSON.stringify(prefs));
+    setIsOpen(false);
+  };
 
   const handleAcceptAll = () => {
     savePreferences({
       strictlyNecessary: true,
       performance: true,
       targeting: true,
-    })
-  }
+    });
+  };
 
   const handleDeclineAll = () => {
     savePreferences({
       strictlyNecessary: true,
       performance: false,
       targeting: false,
-    })
-  }
+    });
+  };
+
+  if (!hydrated) return null; // 🔑 Hydration fix
 
   return (
     <>
       {/* === Trigger Button === */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-4 left-4 z-50 flex items-center gap-2 bg-[#1e1e1e] text-white rounded-full px-4 py-2 hover:pl-6 transition-all group"
+        className="fixed bottom-8 left-8 z-50 flex items-center bg-[#1e1e1e] text-white rounded-full px-2 py-2 transition-all group"
       >
-        <Image src="icons/cookies.svg" alt="Cookie Icon" width={24} height={24} />
-        <span className="opacity-0 group-hover:opacity-100 transition-opacity">
-          Cookie Settings
-        </span>
+        <Image
+          src="/icons/cookies.svg"
+          alt="Cookie Icon"
+          width={24}
+          height={24}
+        />
       </button>
 
       {/* === Cookie Modal === */}
@@ -69,26 +77,45 @@ export default function CookieModal() {
             exit={{ opacity: 0, y: 50 }}
             className="fixed bottom-4 left-4 z-50 max-w-md rounded-2xl bg-gradient-to-br from-[#00262b] to-[#00404d] p-6 text-white shadow-[0_0_30px_rgba(0,0,0,0.6)] backdrop-blur-md border border-white/10"
           >
-            <h2 className="text-xl font-bold mb-2">This website uses cookies</h2>
+            <h2 className="text-xl font-bold mb-2">
+              This website uses cookies
+            </h2>
             <p className="text-sm mb-4 text-gray-200">
-              This website uses cookies to improve user experience. By using our website, you consent to all cookies in accordance with our Cookie Policy.{' '}
+              This website uses cookies to improve user experience. By using our
+              website, you consent to all cookies in accordance with our Cookie
+              Policy.{" "}
               <span className="underline cursor-pointer">Read more</span>
             </p>
 
             <div className="space-y-2 mb-4">
-              <Checkbox label="Strictly Necessary" checked disabled />
+              <Checkbox
+                label="Strictly Necessary"
+                checked={preferences.strictlyNecessary}
+                onChange={() =>
+                  setPreferences((prev) => ({
+                    ...prev,
+                    strictlyNecessary: !prev.strictlyNecessary,
+                  }))
+                }
+              />
               <Checkbox
                 label="Performance"
                 checked={preferences.performance}
                 onChange={() =>
-                  setPreferences((prev) => ({ ...prev, performance: !prev.performance }))
+                  setPreferences((prev) => ({
+                    ...prev,
+                    performance: !prev.performance,
+                  }))
                 }
               />
               <Checkbox
                 label="Targeting"
                 checked={preferences.targeting}
                 onChange={() =>
-                  setPreferences((prev) => ({ ...prev, targeting: !prev.targeting }))
+                  setPreferences((prev) => ({
+                    ...prev,
+                    targeting: !prev.targeting,
+                  }))
                 }
               />
             </div>
@@ -112,14 +139,14 @@ export default function CookieModal() {
               onClick={() => setShowDetails((prev) => !prev)}
               className="flex items-center gap-2 text-sm underline"
             >
-              {showDetails ? 'Hide details' : 'Show details'}
+              {showDetails ? "Hide details" : "Show details"}
             </button>
 
             <AnimatePresence>
               {showDetails && (
                 <motion.div
                   initial={{ height: 0 }}
-                  animate={{ height: 'auto' }}
+                  animate={{ height: "auto" }}
                   exit={{ height: 0 }}
                   className="overflow-hidden"
                 >
@@ -131,15 +158,23 @@ export default function CookieModal() {
                     className="mt-4 bg-white text-black rounded-xl p-4 shadow-md"
                   >
                     <div className="flex gap-4 mb-2 flex-wrap">
-                      <span className="px-2 py-1 bg-black text-white rounded">Strictly Necessary</span>
-                      <span className="px-2 py-1 bg-gray-300 text-black rounded">Performance</span>
-                      <span className="px-2 py-1 bg-gray-300 text-black rounded">Targeting</span>
+                      <span className="px-2 py-1 bg-black text-white rounded">
+                        Strictly Necessary
+                      </span>
+                      <span className="px-2 py-1 bg-gray-300 text-black rounded">
+                        Performance
+                      </span>
+                      <span className="px-2 py-1 bg-gray-300 text-black rounded">
+                        Targeting
+                      </span>
                     </div>
                     <p className="text-sm mb-2">
-                      These cookies are essential for basic website functionality like user login and session management.
+                      These cookies are essential for basic website
+                      functionality like user login and session management.
                     </p>
                     <div className="text-xs">
-                      <strong>_GRECAPTCHA</strong> – provided by Google LLC, expires in 6 months
+                      <strong>_GRECAPTCHA</strong> – provided by Google LLC,
+                      expires in 6 months
                     </div>
                   </motion.div>
                 </motion.div>
@@ -149,7 +184,7 @@ export default function CookieModal() {
         )}
       </AnimatePresence>
     </>
-  )
+  );
 }
 
 function Checkbox({
@@ -158,10 +193,10 @@ function Checkbox({
   onChange,
   disabled = false,
 }: {
-  label: string
-  checked: boolean
-  onChange?: () => void
-  disabled?: boolean
+  label: string;
+  checked: boolean;
+  onChange?: () => void;
+  disabled?: boolean;
 }) {
   return (
     <div className="flex items-center gap-2">
@@ -172,7 +207,9 @@ function Checkbox({
         disabled={disabled}
         className="w-4 h-4"
       />
-      <label className={`uppercase text-sm ${disabled ? 'opacity-60' : ''}`}>{label}</label>
+      <label className={`uppercase text-sm ${disabled ? "opacity-60" : ""}`}>
+        {label}
+      </label>
     </div>
-  )
+  );
 }
