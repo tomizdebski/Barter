@@ -1,8 +1,10 @@
 "use client";
 
+
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+
 
 type Preferences = {
   strictlyNecessary: boolean;
@@ -55,6 +57,7 @@ export default function CookieModal() {
 
   return (
     <>
+
       {/* === Trigger Button === */}
       <button
         onClick={() => setIsOpen(true)}
@@ -67,6 +70,7 @@ export default function CookieModal() {
           height={24}
         />
       </button>
+
 
       {/* === Cookie Modal === */}
       <AnimatePresence>
@@ -137,7 +141,7 @@ export default function CookieModal() {
 
             <button
               onClick={() => setShowDetails((prev) => !prev)}
-              className="flex items-center gap-2 text-sm underline"
+              className="flex items-center gap-2 text-sm underline mb-2"
             >
               {showDetails ? "Hide details" : "Show details"}
             </button>
@@ -180,6 +184,15 @@ export default function CookieModal() {
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {/* Close Modal Button */}
+            <button
+              onClick={() => setIsOpen(false)}
+              className="absolute top-2 right-2 text-white text-xl"
+              aria-label="Close Cookie Modal"
+            >
+              &times;
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
@@ -213,3 +226,4 @@ function Checkbox({
     </div>
   );
 }
+
