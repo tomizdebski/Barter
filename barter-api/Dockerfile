@@ -4,7 +4,8 @@ WORKDIR /app
 
 COPY package*.json ./
 COPY prisma ./prisma
-COPY . .
+COPY tsconfig*.json ./
+COPY src ./src
 
 RUN npm install --legacy-peer-deps
 RUN npx prisma generate
@@ -23,3 +24,4 @@ COPY --from=builder /app/prisma ./prisma
 ENV NODE_ENV=production
 
 CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main"]
+
