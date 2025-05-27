@@ -23,5 +23,9 @@ COPY --from=builder /app/prisma ./prisma
 
 ENV NODE_ENV=production
 
+# 👇 debug: sprawdź, czy main.js faktycznie istnieje
+RUN ls -la dist
+
 CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main"]
+
 
