@@ -8,9 +8,11 @@ COPY package*.json ./
 COPY tsconfig*.json ./
 COPY src ./src
 
-# Instalujemy zależności i generujemy Prisma Client
+# Instalujemy zależności
 RUN npm install --legacy-peer-deps
-RUN npx prisma generate
+
+# Generujemy Prisma Client – podając ścieżkę do schema.prisma
+RUN npx prisma generate --schema=src/prisma/schema.prisma
 
 # Budujemy aplikację NestJS (do /dist)
 RUN npm run build
@@ -25,7 +27,7 @@ WORKDIR /app
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/src/prisma ./src/prisma  
 
 ENV NODE_ENV=production
 
@@ -33,7 +35,8 @@ ENV NODE_ENV=production
 RUN echo "--- FINAL CONTAINER /dist ---" && ls -la dist && echo "----------------------------"
 
 # Uruchomienie: migracje Prisma i start aplikacji
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main"]
+CMD ["sh", "-c", "npx prisma migrate deploy --schema=src/prisma/schema.prisma && node dist/main"]
+
 
 
 
