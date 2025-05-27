@@ -6,7 +6,6 @@ WORKDIR /app
 # Kopiujemy tylko potrzebne pliki
 COPY package*.json ./
 COPY tsconfig*.json ./
-COPY prisma ./prisma
 COPY src ./src
 
 # Instalujemy zależności i generujemy Prisma Client
