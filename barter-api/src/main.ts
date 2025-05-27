@@ -17,7 +17,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
   app.use(cookieParser());
   app.enableCors({
-    origin: ['http://localhost:3000', `${process.env.CORS_ORIGIN}`],
+    origin: ['http://localhost:3000', `${process.env.CORS_ORIGIN}`, 'https://barter-roz3.onrender.com'],
     credentials: true,
   });
   app.useGlobalPipes(
