@@ -78,11 +78,17 @@ export class AuthService {
     if (!token) {
       throw new ForbiddenException();
     }
-
+    // działa lokalnie , ale nie działa na vercelu
+    // res.cookie('token', token, {
+    //   httpOnly: false,
+    //   secure: false,
+    //   sameSite: 'lax',
+    //   maxAge: 7 * 24 * 60 * 60 * 1000,
+    // });
     res.cookie('token', token, {
-      httpOnly: false,
-      secure: false,
-      sameSite: 'lax',
+      httpOnly: true, // 🔐 ukryj przed JS
+      secure: true, // ✅ wymagane w HTTPS (Render i Vercel używają)
+      sameSite: 'none', // ❗️pozwala na cross-origin cookies
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
