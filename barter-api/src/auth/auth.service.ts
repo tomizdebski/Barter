@@ -107,6 +107,13 @@ export class AuthService {
     return user;
   }
 
+  async deleteByEmail(email: string) {
+  return this.prisma.users.delete({
+    where: { email },
+  });
+}
+
+
   async hashPassword(password: string) {
     return bcrypt.hash(password, 10);
   }

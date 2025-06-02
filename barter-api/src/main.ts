@@ -17,7 +17,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
   app.use(cookieParser());
   app.enableCors({
-    origin: ['http://172.31.9.218:3000', `${process.env.CORS_ORIGIN}`],
+    origin: ['http://172.31.9.218:3000', `${process.env.CORS_ORIGIN}`, 'http://localhost:3000'],
     credentials: true,
   });
   app.useGlobalPipes(
