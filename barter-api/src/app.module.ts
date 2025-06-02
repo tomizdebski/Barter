@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { PrismaModule } from '../prisma/prisma.module';
+import { PrismaModule } from './prisma/prisma.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { QuizModule } from './quiz/quiz.module';
 import { LessonsModule } from './lessons/lessons.module';
