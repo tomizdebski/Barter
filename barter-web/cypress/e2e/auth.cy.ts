@@ -1,7 +1,7 @@
 const baseApi = "http://localhost:4000";
 const frontend = "http://localhost:3000";
 
-const user = {
+const lessonUser = {
   firstName: "Test",
   lastName: "User",
   email: `testuser_${Date.now()}@example.com`,
@@ -12,10 +12,10 @@ describe("Auth Flow - signup, login, delete own account", () => {
   it("should register user via API (multipart/form-data)", () => {
     cy.fixture("avatar.jpg", "base64").then((fileContent) => {
       const formData = new FormData();
-      formData.append("firstName", user.firstName);
-      formData.append("lastName", user.lastName);
-      formData.append("email", user.email);
-      formData.append("password", user.password);
+      formData.append("firstName", lessonUser.firstName);
+      formData.append("lastName", lessonUser.lastName);
+      formData.append("email", lessonUser.email);
+      formData.append("password", lessonUser.password);
       formData.append(
         "avatar",
         Cypress.Blob.base64StringToBlob(fileContent, "image/jpeg"),
@@ -40,8 +40,8 @@ describe("Auth Flow - signup, login, delete own account", () => {
       method: "POST",
       url: `${baseApi}/auth/signin`,
       body: {
-        email: user.email,
-        password: user.password,
+        email: lessonUser.email,
+        password: lessonUser.password,
       },
       headers: {
         "Content-Type": "application/json",
