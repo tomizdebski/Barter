@@ -70,7 +70,7 @@ export class AuthController {
     return this.authService.signin(dto, req, res);
   }
 
-  @Get('signout')
+  @Post('signout')
   @ApiOperation({ summary: 'Sign out the user' })
   @ApiResponse({ status: 200, description: 'User signed out' })
   async signout(
