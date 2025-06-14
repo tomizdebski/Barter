@@ -80,11 +80,19 @@ export class AuthService {
     }
 
     res.cookie('token', token, {
-      httpOnly: false,
-      secure: false,
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true, // obowiązkowe na HTTPS
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 dni
     });
+
+    // localhost only
+    // res.cookie('token', token, {
+    //   httpOnly: false,
+    //   secure: false,
+    //   sameSite: 'lax',
+    //   maxAge: 7 * 24 * 60 * 60 * 1000,
+    // });
 
     return {
       message: 'Logged in successfully',
@@ -108,11 +116,10 @@ export class AuthService {
   }
 
   async deleteByEmail(email: string) {
-  return this.prisma.users.delete({
-    where: { email },
-  });
-}
-
+    return this.prisma.users.delete({
+      where: { email },
+    });
+  }
 
   async hashPassword(password: string) {
     return bcrypt.hash(password, 10);
