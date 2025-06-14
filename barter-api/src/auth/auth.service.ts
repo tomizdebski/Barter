@@ -79,20 +79,14 @@ export class AuthService {
       throw new ForbiddenException();
     }
 
-    res.cookie('token', token, {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true, // obowiązkowe na HTTPS
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 dni
-    });
+    const isProd = process.env.NODE_ENV === 'production';
 
-    // localhost only
-    // res.cookie('token', token, {
-    //   httpOnly: false,
-    //   secure: false,
-    //   sameSite: 'lax',
-    //   maxAge: 7 * 24 * 60 * 60 * 1000,
-    // });
+    res.cookie('token', token, {
+      httpOnly: isProd, // ✅ true w produkcji, false lokalnie
+      secure: isProd, // ✅ musi być true na HTTPS
+      sameSite: isProd ? 'none' : 'lax', // ✅ none dla cross-origin
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
     return {
       message: 'Logged in successfully',
