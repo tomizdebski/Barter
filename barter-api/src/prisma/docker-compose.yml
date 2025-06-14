@@ -1,0 +1,17 @@
+
+
+services:
+  postgres-barterdb:
+    image: postgres:15
+    container_name: container-barterdb
+    environment:
+      POSTGRES_DB: barterdb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5434:5432" 
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

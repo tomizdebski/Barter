@@ -35,3 +35,35 @@
 //     }
 //   }
 // }
+
+Cypress.Commands.add("form_request", (method, url, formDataObj) => {
+  const formData = new FormData();
+
+  Object.entries(formDataObj).forEach(([key, value]) => {
+    if (
+      typeof value === "object" &&
+      value !== null &&
+      "fileContent" in value &&
+      "fileName" in value &&
+      "mimeType" in value
+    ) {
+      const blob = Cypress.Blob.base64StringToBlob(
+        value.fileContent,
+        value.mimeType
+      );
+      formData.append(key, blob, value.fileName);
+    } else {
+      formData.append(key, value as string);
+    }
+  });
+
+  return cy.request({
+    method,
+    url,
+    body: formData,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+});
+

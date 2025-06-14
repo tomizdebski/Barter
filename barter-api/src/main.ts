@@ -17,9 +17,14 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
   app.use(cookieParser());
   app.enableCors({
-    origin: ['http://172.31.9.218:3000', `${process.env.CORS_ORIGIN}`],
-    credentials: true,
-  });
+  origin: [
+    'https://barter-self.vercel.app',
+    'http://localhost:3000',
+    ...(process.env.CORS_ORIGIN ? [process.env.CORS_ORIGIN] : []),
+  ],
+  credentials: true,
+});
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,

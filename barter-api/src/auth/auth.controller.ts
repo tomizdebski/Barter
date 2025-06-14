@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
+  Param,
   Post,
   Req,
   Res,
@@ -71,7 +73,10 @@ export class AuthController {
   @Get('signout')
   @ApiOperation({ summary: 'Sign out the user' })
   @ApiResponse({ status: 200, description: 'User signed out' })
-  async signout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+  async signout(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     return this.authService.signout(req, res);
   }
 
@@ -83,6 +88,12 @@ export class AuthController {
   async me(@Req() req: Request) {
     return this.authService.me(req);
   }
+
+  @Delete('user/:email')
+  @HttpCode(200)
+  @ApiOperation({ summary: 'Delete user by email (for testing purposes)' })
+  @ApiResponse({ status: 200, description: 'User deleted' })
+  async deleteUserByEmail(@Param('email') email: string) {
+    return this.authService.deleteByEmail(email);
+  }
 }
-
-
