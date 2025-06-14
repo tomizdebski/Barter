@@ -11,9 +11,11 @@ RUN npm install
 COPY . .
 
 # Generowanie klienta Prisma
+RUN echo "🛠 Generating Prisma client..."
 RUN npx prisma generate
 
 # Budowanie projektu (Nest -> dist/)
+RUN echo "🏗 Building NestJS..."
 RUN npm run build
 
 # Etap 2 – finalny obraz produkcyjny
