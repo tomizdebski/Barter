@@ -34,7 +34,7 @@ const UserDropdown: React.FC = () => {
         className="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-gray-100 transition"
       >
         <Image
-          src={`${process.env.NEXT_PUBLIC_API_URL}/${user.avatarUrl}`}
+          src={`${process.env.NEXT_PUBLIC_API_URL}/${user.avatar}`}
           alt={user.email}
           width={36}
           height={36}
@@ -59,7 +59,7 @@ const UserDropdown: React.FC = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Image
-                src={`${process.env.NEXT_PUBLIC_API_URL}/${user.avatarUrl}`}
+                src={`${process.env.NEXT_PUBLIC_API_URL}/${user.avatar}`}
                 alt="Avatar"
                 width={40}
                 height={40}
