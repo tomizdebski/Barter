@@ -1,14 +1,19 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { jwtDecode } from "jwt-decode";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
 
 export type User = {
   id: string;
   email: string;
   firstName?: string;
   lastName?: string;
-  avatarUrl?: string;
+  avatar?: string;
 };
 
 type UserContextType = {
@@ -19,28 +24,31 @@ type UserContextType = {
 
 export const UserContext = createContext<UserContextType | undefined>(undefined);
 
-function getCookie(name: string): string | undefined {
-  const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
-  return match?.[2];
-}
-
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const token = getCookie("token");
-    if (token) {
+    const fetchUser = async () => {
       try {
-        const decoded = jwtDecode<User>(token);
-        setUser(decoded);
-        //console.log("Zdekodowany token", decoded);
-      } catch (error) {
-        console.error("Błąd dekodowania tokena", error);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
+          credentials: "include", // 💡 kluczowe – wyślij ciasteczko z tokenem
+        });
+
+        if (!res.ok) throw new Error("Not authenticated");
+
+        const data = await res.json();
+        setUser(data);
+      } catch (err) {
+        setUser(null);
+        console.warn("Nie udało się pobrać użytkownika:", err);
       }
-    }
+    };
+
+    fetchUser();
   }, []);
 
   const logout = () => {
+    // usuwamy ciastko lokalnie – ale backend też powinien mieć /auth/logout
     document.cookie = "token=; Max-Age=0; path=/";
     setUser(null);
     window.location.href = "/";
@@ -55,6 +63,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
 export const useUser = () => {
   const context = useContext(UserContext);
-  if (!context) throw new Error("useUser musi być użyty wewnątrz UserProvidera");
+  if (!context)
+    throw new Error("useUser musi być użyty wewnątrz UserProvidera");
   return context;
 };

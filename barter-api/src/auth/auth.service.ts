@@ -3,6 +3,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { SignUpDto } from './dto/signup.dto';
 import { SigninDto } from './dto/signin.dto';
@@ -51,63 +52,87 @@ export class AuthService {
   }
 
   async signin(dto: SigninDto, req: Request, res: Response) {
-    const { email, password } = dto;
+  const { email, password } = dto;
 
-    const foundUser = await this.prisma.users.findUnique({ where: { email } });
-    if (!foundUser) {
-      throw new BadRequestException('User not found');
-    }
-
-    const isMatch = await this.comparePassword({
-      password,
-      hashedPassword: foundUser.password,
-    });
-
-    if (!isMatch) {
-      throw new BadRequestException('Invalid password');
-    }
-
-    const token = await this.signToken({
-      id: foundUser.id.toString(),
-      email: foundUser.email,
-      firstName: foundUser.firstName ?? undefined,
-      lastName: foundUser.lastName ?? undefined,
-      avatar: foundUser.avatar,
-    });
-
-    if (!token) {
-      throw new ForbiddenException();
-    }
-
-    const isProd = process.env.NODE_ENV === 'production';
-
-    res.cookie('token', token, {
-      httpOnly: isProd, // ✅ true w produkcji, false lokalnie
-      secure: isProd, // ✅ musi być true na HTTPS
-      sameSite: isProd ? 'none' : 'lax', // ✅ none dla cross-origin
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-
-    return {
-      message: 'Logged in successfully',
-      accessToken: token,
-    };
+  const foundUser = await this.prisma.users.findUnique({ where: { email } });
+  if (!foundUser) {
+    throw new BadRequestException('User not found');
   }
+
+  const isMatch = await this.comparePassword({
+    password,
+    hashedPassword: foundUser.password,
+  });
+
+  if (!isMatch) {
+    throw new BadRequestException('Invalid password');
+  }
+
+  const token = await this.signToken({
+    id: foundUser.id.toString(),
+    email: foundUser.email,
+    firstName: foundUser.firstName ?? undefined,
+    lastName: foundUser.lastName ?? undefined,
+    avatar: foundUser.avatar,
+  });
+
+  if (!token) {
+    throw new ForbiddenException();
+  }
+
+  const isProd = process.env.NODE_ENV === 'production';
+
+  res.cookie('token', token, {
+    httpOnly: isProd,       // ❗️niewidoczne w JS na produkcji
+    secure: isProd,         // ❗️HTTPS
+    sameSite: isProd ? 'none' : 'lax',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+
+  return {
+    message: 'Logged in successfully',
+    accessToken: token,
+  };
+}
+
 
   async signout(req: Request, res: Response) {
-    res.clearCookie('token', {
-      httpOnly: true,
-      path: '/',
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    });
-    return { message: 'Logged out successfully' };
-  }
+  const isProd = process.env.NODE_ENV === 'production';
+
+  res.clearCookie('token', {
+    httpOnly: isProd,
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'lax',
+    path: '/',
+  });
+
+  return res.status(200).json({ message: 'Logged out successfully' });
+}
+
 
   async me(req: Request) {
-    const { user } = req as any;
-    return user;
+  const user = req.user as { id: string };
+
+  if (!user?.id) throw new ForbiddenException('No user ID in token');
+
+  const dbUser = await this.prisma.users.findUnique({
+    where: { id: parseInt(user.id) },
+    select: {
+      id: true,
+      email: true,
+      firstName: true,
+      lastName: true,
+      avatar: true,
+    },
+  });
+
+  if (!dbUser) {
+    throw new NotFoundException('User not found in database');
   }
+
+  return dbUser;
+}
+
 
   async deleteByEmail(email: string) {
     return this.prisma.users.delete({
