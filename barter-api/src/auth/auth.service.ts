@@ -87,6 +87,7 @@ export class AuthService {
     secure: isProd,         // ❗️HTTPS
     sameSite: isProd ? 'none' : 'lax',
     maxAge: 7 * 24 * 60 * 60 * 1000,
+    domain: 'barter-self.vercel.app',
   });
 
   return {
@@ -105,6 +106,7 @@ export class AuthService {
   secure: isProd,
   sameSite: isProd ? 'none' : 'lax',
   expires: new Date(0), // 1970
+  domain: 'barter-self.vercel.app',
 });
 
 
