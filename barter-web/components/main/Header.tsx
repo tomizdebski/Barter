@@ -22,6 +22,7 @@ const Header: React.FC = () => {
   const [query, setQuery] = useState("");
   console.log(user)
 
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
