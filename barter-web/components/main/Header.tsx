@@ -20,6 +20,7 @@ const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
+  console.log(user);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
