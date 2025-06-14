@@ -8,7 +8,7 @@ const mockUser: User = {
   email: 'tomasz@example.com',
   firstName: 'Tomasz',
   lastName: 'Izdebski',
-  avatarUrl: 'avatars/test.jpg',
+  avatar: 'avatars/test.jpg',
 };
 
 describe('<UserDropdown />', () => {
