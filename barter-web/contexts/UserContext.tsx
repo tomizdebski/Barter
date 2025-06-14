@@ -28,31 +28,51 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
-          credentials: "include", // 💡 kluczowe – wyślij ciasteczko z tokenem
-        });
+  const fetchUser = async () => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
+        credentials: "include",
+      });
 
-        if (!res.ok) throw new Error("Not authenticated");
-
-        const data = await res.json();
-        setUser(data);
-      } catch (err) {
-        setUser(null);
-        console.warn("Nie udało się pobrać użytkownika:", err);
+      if (!res.ok) {
+        console.warn("Not authenticated");
+        return setUser(null);
       }
-    };
 
-    fetchUser();
-  }, []);
-
-  const logout = () => {
-    // usuwamy ciastko lokalnie – ale backend też powinien mieć /auth/logout
-    document.cookie = "token=; Max-Age=0; path=/";
-    setUser(null);
-    window.location.href = "/";
+      const data = await res.json();
+      setUser(data);
+    } catch (err) {
+      console.warn("Błąd pobierania użytkownika:", err);
+      setUser(null);
+    }
   };
+  //document.cookie = "token=; path=/; max-age=0"; //działa lokalnie
+  
+  const timeout = setTimeout(fetchUser, 200);
+  return () => clearTimeout(timeout);
+}, []);
+
+
+  const logout = async () => {
+  try {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signout`, {
+      method: 'POST',
+      credentials: 'include',
+    });
+  } catch (err) {
+    console.error("Logout failed:", err);
+  } finally {
+    setUser(null);
+
+    // Daj chwilę na reset tokena zanim przelogujesz
+    setTimeout(() => {
+      window.location.href = "/";
+    }, 100);
+  }
+};
+
+
+
 
   return (
     <UserContext.Provider value={{ user, setUser, logout }}>

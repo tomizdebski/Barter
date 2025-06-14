@@ -99,15 +99,19 @@ export class AuthService {
   async signout(req: Request, res: Response) {
   const isProd = process.env.NODE_ENV === 'production';
 
-  res.clearCookie('token', {
-    httpOnly: isProd,
-    secure: isProd,
-    sameSite: isProd ? 'none' : 'lax',
-    path: '/',
-  });
+  res.cookie('token', '', {
+  path: '/',
+  httpOnly: isProd,
+  secure: isProd,
+  sameSite: isProd ? 'none' : 'lax',
+  expires: new Date(0), // 1970
+});
+
 
   return res.status(200).json({ message: 'Logged out successfully' });
 }
+
+
 
 
   async me(req: Request) {
@@ -161,7 +165,7 @@ export class AuthService {
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
-      avatarUrl: user.avatar || null,
+      avatar: user.avatar || null,
     };
 
     return this.jwt.signAsync(payload, {
