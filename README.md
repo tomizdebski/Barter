@@ -36,8 +36,8 @@ Barter/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/barter.git
-cd barter
+git clone https://github.com/tomizdebski/Barter
+cd Barter
 ```
 
 ### 2. Configure environment variables
