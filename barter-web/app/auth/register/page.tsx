@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRef, useState } from "react";
 import AvatarEditor from "react-avatar-editor";
 import { Eye, EyeOff } from "lucide-react";
+import { useToast } from "@/components/toast/ToastProvider";
 
 const schema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -31,6 +32,7 @@ export default function RegisterPage() {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [scale, setScale] = useState(1);
   const editorRef = useRef<AvatarEditor | null>(null);
+  const toast = useToast();
 
   const {
     register,
@@ -75,9 +77,19 @@ export default function RegisterPage() {
         setAvatarFile(null);
         setAvatarPreview(null);
         setAvatarAccepted(false);
+        toast.show({
+          title: "Account created",
+          description: "You can now log in with your credentials.",
+          variant: "success",
+        });
         router.push("/auth/login");
       } else {
         const text = await res.text();
+        toast.show({
+          title: "Signup failed",
+          description: text || "Something went wrong.",
+          variant: "error",
+        });
         console.error("Signup failed:", text);
       }
     } catch (err) {

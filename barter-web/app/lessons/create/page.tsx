@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/contexts/UserContext"; 
+import { useToast } from "@/components/toast/ToastProvider";
 
 const schema = z.object({
   name: z.string().min(3, "Lesson title is required"),
@@ -25,6 +26,7 @@ export default function AddLessonPage() {
   const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
   const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
   const [previewVideo, setPreviewVideo] = useState<string | null>(null);
+  const toast = useToast();
 
   const {
     register,
@@ -70,11 +72,27 @@ export default function AddLessonPage() {
       });
 
       if (res.ok) {
+        toast.show({
+          title: "Lesson created",
+          description: "Your lesson has been successfully created.",
+          variant: "success",
+        });
         router.push("/dashboard");
       } else {
+        const text = await res.text();
+        toast.show({
+          title: "Lesson creation failed",
+          description: text || "Something went wrong.",
+          variant: "error",
+        });
         console.error("Lesson creation failed");
       }
     } catch (err) {
+      toast.show({
+        title: "Lesson creation failed",
+        description: "Something went wrong.",
+        variant: "error",
+      });
       console.error("Error:", err);
     } finally {
       setLoading(false);
