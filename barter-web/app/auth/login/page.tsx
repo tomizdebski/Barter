@@ -8,8 +8,9 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { jwtDecode } from "jwt-decode";
-import { useUser } from "@/contexts/UserContext"; 
-import type { User } from "@/contexts/UserContext"; 
+import { useUser } from "@/contexts/UserContext";
+import type { User } from "@/contexts/UserContext";
+import { useToast } from "@/components/toast/ToastProvider";
 
 //  Zod schema
 const schema = z.object({
@@ -22,7 +23,8 @@ type FormValues = z.infer<typeof schema>;
 export default function LoginPage() {
   const router = useRouter();
   const [serverError, setServerError] = useState("");
-  const { setUser } = useUser(); // 
+  const { setUser } = useUser();
+  const toast = useToast();
 
   const {
     register,
@@ -36,18 +38,26 @@ export default function LoginPage() {
     setServerError("");
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signin`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/signin`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+          credentials: "include",
+        }
+      );
 
       if (!response.ok) {
         const err = await response.json();
         setServerError(err.message || "Login failed");
+        toast.show({
+          title: "Login failed",
+          description: "Invalid email or password.",
+          variant: "error",
+        });
         return;
       }
 
@@ -61,6 +71,11 @@ export default function LoginPage() {
         const decodedUser = jwtDecode<User>(token);
         setUser(decodedUser);
       }
+      toast.show({
+        title: "Login successful",
+        description: "You have been logged in.",
+        variant: "success",
+      });
 
       router.push("/");
     } catch (error) {
@@ -178,4 +193,3 @@ export default function LoginPage() {
     </div>
   );
 }
-

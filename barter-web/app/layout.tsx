@@ -5,6 +5,7 @@ import Header from "@/components/main/Header";
 import Footer from "@/components/main/Footer";
 import ChatWidget from "@/components/chatAi/ChatWidget";
 import { UserProvider } from "@/contexts/UserContext";
+import ToastProvider from "@/components/toast/ToastProvider";
 import CookieModal from "@/components/CookieModal";
 
 // Import czcionki Inter
@@ -28,6 +29,7 @@ export default function RootLayout({
   return (
     <html >
       <body className={`${inter.variable} font-sans antialiased`}>
+      <ToastProvider>
       <UserProvider>
         <Header />
         {children}
@@ -35,6 +37,7 @@ export default function RootLayout({
         <ChatWidget />
         <Footer />
       </UserProvider>
+      </ToastProvider>
       </body>
     </html>
   );
