@@ -42,18 +42,26 @@ export default function MyFavouritesPage() {
   }, []);
 
   return (
-    <div className="max-w-6xl mx-auto py-8 px-4 text-[#00262b]">
-      <h1 className="text-2xl font-bold mb-6">Your Favorite Lessons</h1>
+    <div className="flex flex-col min-h-[75vh]">
+      {/* Główna treść */}
+      <main className="flex-grow max-w-6xl mx-auto py-16 px-4 text-[#00262b] flex flex-col justify-center">
+        <h1 className="text-3xl font-bold mb-8 text-center">Your Favorite Lessons</h1>
 
-      {favourites.length === 0 ? (
-        <p className="text-gray-600">You don’t have any favorite lessons yet.</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {favourites.map((lesson) => (
-            <LessonCard key={lesson.id} {...lesson} />
-          ))}
-        </div>
-      )}
+        {favourites.length === 0 ? (
+          <p className="text-gray-600 text-center text-lg">
+            You don’t have any favorite lessons yet.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {favourites.map((lesson) => (
+              <LessonCard key={lesson.id} {...lesson} />
+            ))}
+          </div>
+        )}
+      </main>
+
+      {/* Footer */}
+      
     </div>
   );
 }
