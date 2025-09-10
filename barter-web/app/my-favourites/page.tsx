@@ -42,7 +42,7 @@ export default function MyFavouritesPage() {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-[75vh]">
+    <div className="flex flex-col min-h-[75nvh]">
       {/* Główna treść */}
       <main className="flex-grow max-w-6xl mx-auto py-16 px-4 text-[#00262b] flex flex-col justify-center">
         <h1 className="text-3xl font-bold mb-8 text-center">Your Favorite Lessons</h1>
